@@ -3,16 +3,37 @@ package com.example.edubridge;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // ✅ Auth Guard: must be logged in
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "Please log in first.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(DashboardActivity.this, LoginActivity.class));
+            finish();
+            return;
+        }
+
+        // ✅ Email Verification Guard: must be verified
+        if (!currentUser.isEmailVerified()) {
+            Toast.makeText(this, "Email not verified. Please verify first.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(DashboardActivity.this, VerifyEmailActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_dashboard);
 
         // 1. Setup Navigation Cards (6 Items)
@@ -43,3 +64,4 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 }
+

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_main"
+    android:padding="24dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daily Check-In"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/brand_black"
+            android:layout_centerInParent="true"/>
+        <ImageView
+            android:id="@+id/btn_close"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="@color/brand_black"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        app:strokeColor="@color/brand_black"
+        app:strokeWidth="2dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/bg_card"
+        android:layout_marginBottom="32dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="24dp">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_media_rew"
+                    app:tint="@color/brand_black"
+                    android:padding="4dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="December 2025"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/brand_black"
+                    android:layout_marginHorizontal="16dp"/>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_media_ff"
+                    app:tint="@color/brand_black"
+                    android:padding="4dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+                <TextView android:text="Mo" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content" android:gravity="center" android:textStyle="bold"/>
+                <TextView android:text="Tu" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content" android:gravity="center" android:textStyle="bold"/>
+                <TextView android:text="We" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content" android:gravity="center" android:textStyle="bold"/>
+                <TextView android:text="Th" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content" android:gravity="center" android:textStyle="bold"/>
+                <TextView android:text="Fr" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content" android:gravity="center" android:textStyle="bold"/>
+                <TextView android:text="Sa" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content" android:gravity="center" android:textStyle="bold"/>
+                <TextView android:text="Su" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content" android:gravity="center" android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <FrameLayout android:layout_weight="1" android:layout_width="0dp" android:layout_height="40dp">
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_check_mark"
+                        android:layout_gravity="center"/>
+                </FrameLayout>
+
+                <FrameLayout android:layout_weight="1" android:layout_width="0dp" android:layout_height="40dp">
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_check_mark"
+                        android:layout_gravity="center"/>
+                </FrameLayout>
+
+                <FrameLayout android:layout_weight="1" android:layout_width="0dp" android:layout_height="40dp">
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_check_mark"
+                        android:layout_gravity="center"/>
+                </FrameLayout>
+
+                <FrameLayout android:layout_weight="1" android:layout_width="0dp" android:layout_height="40dp">
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_calendar_circle"
+                        android:layout_gravity="center"/>
+                    <TextView
+                        android:text="18"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textStyle="bold"/>
+                </FrameLayout>
+
+                <FrameLayout android:layout_weight="1" android:layout_width="0dp" android:layout_height="40dp">
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_calendar_circle"
+                        android:layout_gravity="center"
+                        android:alpha="0.3"/> <TextView android:text="19" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:textColor="@color/text_hint"/>
+                </FrameLayout>
+
+                <FrameLayout android:layout_weight="1" android:layout_width="0dp" android:layout_height="40dp">
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_calendar_circle"
+                        android:layout_gravity="center"
+                        android:alpha="0.3"/>
+                    <TextView android:text="20" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:textColor="@color/text_hint"/>
+                </FrameLayout>
+
+                <FrameLayout android:layout_weight="1" android:layout_width="0dp" android:layout_height="40dp">
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_calendar_circle"
+                        android:layout_gravity="center"
+                        android:alpha="0.3"/>
+                    <TextView android:text="21" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:textColor="@color/text_hint"/>
+                </FrameLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_streak_fire"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 Day Streak"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/brand_black"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You're on fire! Check in now to keep it up."
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_claim"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Check In"
+            android:textColor="@color/brand_white"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            app:backgroundTint="@color/brand_black"
+            app:cornerRadius="30dp"/>
+    </LinearLayout>
+
+</LinearLayout>

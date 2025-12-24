@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="brand_black">#000000</color>
+    <color name="brand_white">#FFFFFF</color>
+    <color name="bg_main">#FFFFFF</color>
+    <color name="bg_card">#FFFFFF</color>
+    <color name="bg_input">#FAFAFA</color>
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#424242</color>
+    <color name="text_hint">#9E9E9E</color>
+    <color name="stroke_color">#000000</color>
+
+    <color name="primary_blue">#000000</color>
+    <color name="blue_700">#000000</color>
+    <color name="blue_200">#000000</color>
+
+    <color name="bg_light">#FFFFFF</color>
+    <color name="white_opacity_90">#E6FFFFFF</color>
+
+    <color name="accent_green">#000000</color>
+    <color name="green_500">#000000</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="divider">#EEEEEE</color>
 </resources>

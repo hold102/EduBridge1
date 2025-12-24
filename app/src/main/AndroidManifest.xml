@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.edubridge"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -13,16 +11,42 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.EduBridge">
+        android:theme="@style/Theme.EduBridge"
+        android:usesCleartextTraffic="true">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".SignUpActivity" />
+
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".VerifyEmailActivity" />
+        <activity android:name=".ResetPasswordActivity" />
+
+        <activity android:name=".DashboardActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".ContentLibraryActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".CommunityActivity" />
+        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".CourseDetailActivity" />
+        <activity android:name=".PostDetailActivity" />
+        <activity android:name=".DailyCheckInActivity" />
+        <activity android:name=".HomeworkHelperActivity" />
+        <activity android:name=".VoiceConversationActivity" />
+        <activity android:name=".StudyPlannerActivity" />
+
+        <activity android:name=".LearningBuddyActivity" />
+        <activity android:name=".ChangePasswordActivity" />
+        <activity android:name=".CreatePostActivity" />
+
     </application>
 
 </manifest>

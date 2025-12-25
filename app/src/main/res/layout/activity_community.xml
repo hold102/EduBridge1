@@ -41,7 +41,7 @@
         android:layout_below="@id/header"
         android:padding="24dp"
         android:clipToPadding="false"
-        android:paddingBottom="100dp" />
+        android:paddingBottom="120dp" />
 
     <!-- Floating Create Button -->
     <com.google.android.material.card.MaterialCardView
@@ -51,10 +51,11 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="24dp"
+        android:clickable="true"
+        android:focusable="true"
         app:cardCornerRadius="30dp"
         app:cardBackgroundColor="@color/brand_black"
-        app:cardElevation="6dp"
-        android:contentDescription="Create post">
+        app:cardElevation="6dp">
 
         <ImageView
             android:layout_width="match_parent"
@@ -63,6 +64,7 @@
             android:padding="16dp"
             app:tint="@color/brand_white"
             android:contentDescription="Add" />
+
     </com.google.android.material.card.MaterialCardView>
 
 </RelativeLayout>

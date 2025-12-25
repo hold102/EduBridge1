@@ -1,31 +1,32 @@
 package com.example.edubridge;
 
+import com.google.firebase.Timestamp;
+
 public class CommunityPost {
-    private final String name;
-    private final String content;
-    private final String time;
-    private final int avatarResId;
+    private String id;          // Firestore docId（本地用）
+    private String authorId;    // ✅ 发布者 uid（Firestore 存）
+    private String userName;
+    private String content;
+    private Timestamp createdAt;
+    private int avatarRes;
 
-    public CommunityPost(String name, String content, String time, int avatarResId) {
-        this.name = name;
-        this.content = content;
-        this.time = time;
-        this.avatarResId = avatarResId;
-    }
+    public CommunityPost() {}
 
-    public String getName() {
-        return name;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public String getContent() {
-        return content;
-    }
+    public String getAuthorId() { return authorId; }
+    public void setAuthorId(String authorId) { this.authorId = authorId; }
 
-    public String getTime() {
-        return time;
-    }
+    public String getUserName() { return userName; }
+    public void setUserName(String userName) { this.userName = userName; }
 
-    public int getAvatarResId() {
-        return avatarResId;
-    }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+
+    public int getAvatarRes() { return avatarRes; }
+    public void setAvatarRes(int avatarRes) { this.avatarRes = avatarRes; }
 }

@@ -11,7 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
+
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class CommunityPostAdapter extends RecyclerView.Adapter<CommunityPostAdapter.PostViewHolder> {
 
@@ -26,7 +30,8 @@ public class CommunityPostAdapter extends RecyclerView.Adapter<CommunityPostAdap
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_community_post, parent, false);
+        View view = LayoutInflater.from(context)
+                .inflate(R.layout.item_community_post, parent, false);
         return new PostViewHolder(view);
     }
 
@@ -34,17 +39,30 @@ public class CommunityPostAdapter extends RecyclerView.Adapter<CommunityPostAdap
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         CommunityPost post = posts.get(position);
 
-        holder.tvName.setText(post.getName());
-        holder.tvTime.setText(post.getTime());
-        holder.tvContent.setText(post.getContent());
-        holder.imgAvatar.setImageResource(post.getAvatarResId());
+        holder.tvName.setText(safe(post.getUserName()));
+        holder.tvContent.setText(safe(post.getContent()));
+
+        final int avatar = (post.getAvatarRes() == 0)
+                ? R.drawable.img_hero_student
+                : post.getAvatarRes();
+        holder.imgAvatar.setImageResource(avatar);
+
+        final String timeText = formatTimestamp(post.getCreatedAt());
+        holder.tvTime.setText(timeText);
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, PostDetailActivity.class);
-            intent.putExtra(PostDetailActivity.EXTRA_NAME, post.getName());
-            intent.putExtra(PostDetailActivity.EXTRA_TIME, post.getTime());
-            intent.putExtra(PostDetailActivity.EXTRA_CONTENT, post.getContent());
-            intent.putExtra(PostDetailActivity.EXTRA_AVATAR, post.getAvatarResId());
+
+            // ✅新增：传 docId + authorId，用于判断是否本人
+            intent.putExtra(PostDetailActivity.EXTRA_POST_ID, safe(post.getId()));
+            intent.putExtra(PostDetailActivity.EXTRA_AUTHOR_ID, safe(post.getAuthorId()));
+
+            // 原有传参
+            intent.putExtra(PostDetailActivity.EXTRA_NAME, safe(post.getUserName()));
+            intent.putExtra(PostDetailActivity.EXTRA_CONTENT, safe(post.getContent()));
+            intent.putExtra(PostDetailActivity.EXTRA_TIME, timeText);
+            intent.putExtra(PostDetailActivity.EXTRA_AVATAR, avatar);
+
             context.startActivity(intent);
         });
     }
@@ -65,5 +83,13 @@ public class CommunityPostAdapter extends RecyclerView.Adapter<CommunityPostAdap
             tvTime = itemView.findViewById(R.id.tv_time);
             tvContent = itemView.findViewById(R.id.tv_content);
         }
+    }
+
+    private String safe(String s) { return s == null ? "" : s; }
+
+    private String formatTimestamp(Timestamp ts) {
+        if (ts == null) return "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        return sdf.format(ts.toDate());
     }
 }

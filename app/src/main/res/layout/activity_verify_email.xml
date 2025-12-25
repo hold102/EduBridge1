@@ -30,31 +30,31 @@
         android:gravity="center"
         android:layout_marginBottom="12dp" />
 
-    <!-- Guidance -->
+    <!-- Hint -->
     <TextView
         android:id="@+id/tv_hint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="After verifying your email, tap the button below to continue."
+        android:text="After verifying, tap Continue to proceed."
         android:textSize="13sp"
         android:textColor="#888888"
         android:gravity="center"
-        android:layout_marginBottom="28dp" />
+        android:layout_marginBottom="24dp" />
 
-    <!-- Main Action Button -->
+    <!-- ✅ Continue Button (ALWAYS visible, colored) -->
     <Button
-        android:id="@+id/btn_verify"
+        android:id="@+id/btn_continue"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="I'VE VERIFIED"
+        android:text="CONTINUE"
         android:textAllCaps="true"
         android:textStyle="bold"
         android:textSize="16sp"
         android:textColor="@android:color/white"
-        android:background="@android:color/black"
-        android:layout_marginBottom="16dp" />
+        android:backgroundTint="#1565C0"
+        android:layout_marginBottom="18dp" />
 
-    <!-- Resend (✅ fixed touch target) -->
+    <!-- Resend -->
     <TextView
         android:id="@+id/tv_resend"
         android:layout_width="wrap_content"
@@ -65,13 +65,13 @@
         android:textColor="@android:color/black"
         android:padding="12dp"
         android:minHeight="48dp"
-        android:minWidth="160dp"
+        android:minWidth="200dp"
         android:gravity="center"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="10dp"
         android:clickable="true"
         android:focusable="true" />
 
-    <!-- Logout (✅ fixed touch target) -->
+    <!-- Logout -->
     <TextView
         android:id="@+id/tv_logout"
         android:layout_width="wrap_content"
@@ -81,11 +81,12 @@
         android:textColor="#666666"
         android:padding="12dp"
         android:minHeight="48dp"
-        android:minWidth="160dp"
+        android:minWidth="200dp"
         android:gravity="center"
         android:clickable="true"
         android:focusable="true" />
 
 </LinearLayout>
+
 
 

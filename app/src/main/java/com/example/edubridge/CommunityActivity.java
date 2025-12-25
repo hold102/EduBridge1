@@ -3,11 +3,17 @@ package com.example.edubridge;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommunityActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerPosts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,9 +21,12 @@ public class CommunityActivity extends AppCompatActivity {
         setContentView(R.layout.activity_community);
 
         // Back
-        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
+        View btnBack = findViewById(R.id.btn_back);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
-        // FIXED: Create Post (FAB at bottom)
+        // Create Post (FAB at bottom)
         View btnCreate = findViewById(R.id.btn_create_post);
         if (btnCreate != null) {
             btnCreate.setOnClickListener(v -> {
@@ -26,30 +35,17 @@ public class CommunityActivity extends AppCompatActivity {
             });
         }
 
-        // Setup Posts
-        setupPost(R.id.post_1, "Alice M.", "Just finished the Python course!", "2h ago", R.drawable.img_hero_student);
-        setupPost(R.id.post_2, "Bob D.", "Study group for Geography anyone?", "5h ago", R.drawable.ic_ai_buddy_avatar);
-        setupPost(R.id.post_3, "Charlie", "Check out my Art sketch!", "1d ago", R.drawable.img_hero_student);
-    }
+        // RecyclerView setup
+        recyclerPosts = findViewById(R.id.recycler_posts);
+        recyclerPosts.setLayoutManager(new LinearLayoutManager(this));
 
-    private void setupPost(int includeId, String name, String content, String time, int avatarResId) {
-        View postView = findViewById(includeId);
-        if (postView != null) {
-            TextView tvName = postView.findViewById(R.id.tv_user_name);
-            TextView tvContent = postView.findViewById(R.id.tv_content);
-            TextView tvTime = postView.findViewById(R.id.tv_time);
-            ImageView imgAvatar = postView.findViewById(R.id.img_avatar);
+        // Dummy posts (for UI testing)
+        List<CommunityPost> dummyPosts = new ArrayList<>();
+        dummyPosts.add(new CommunityPost("Alice M.", "Just finished the Python course!", "2h ago", R.drawable.img_hero_student));
+        dummyPosts.add(new CommunityPost("Bob D.", "Study group for Geography anyone?", "5h ago", R.drawable.ic_ai_buddy_avatar));
+        dummyPosts.add(new CommunityPost("Charlie", "Check out my Art sketch!", "1d ago", R.drawable.img_hero_student));
 
-            if (tvName != null) tvName.setText(name);
-            if (tvContent != null) tvContent.setText(content);
-            if (tvTime != null) tvTime.setText(time);
-            if (imgAvatar != null) imgAvatar.setImageResource(avatarResId);
-
-            // FIXED: Navigate to Detail Activity
-            postView.setOnClickListener(v -> {
-                Intent intent = new Intent(CommunityActivity.this, PostDetailActivity.class);
-                startActivity(intent);
-            });
-        }
+        CommunityPostAdapter adapter = new CommunityPostAdapter(this, dummyPosts);
+        recyclerPosts.setAdapter(adapter);
     }
 }

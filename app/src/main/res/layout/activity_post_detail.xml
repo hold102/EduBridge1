@@ -6,176 +6,98 @@
     android:orientation="vertical"
     android:background="@color/bg_main">
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:orientation="horizontal"
+        android:padding="24dp"
         android:gravity="center_vertical">
+
         <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/brand_black"/>
+            android:contentDescription="Back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/text_primary" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Post"
-            android:textSize="20sp"
+            android:text="Post Details"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="@color/brand_black"
+            android:textColor="@color/text_primary"
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 
-    <ScrollView
+    <!-- Card -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:gravity="center_vertical">
+
                 <ImageView
+                    android:id="@+id/img_avatar"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/img_hero_student"
-                    android:background="@drawable/bg_input_outline"
-                    android:padding="4dp"/>
+                    android:contentDescription="Avatar"
+                    android:layout_marginEnd="12dp"/>
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
+                    android:orientation="vertical">
+
                     <TextView
+                        android:id="@+id/tv_user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Alice M."
+                        android:text="User"
                         android:textStyle="bold"
-                        android:textColor="@color/brand_black"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary"/>
+
                     <TextView
+                        android:id="@+id/tv_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2 hours ago"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp"/>
+                        android:text="time"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"/>
                 </LinearLayout>
+
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tv_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Just finished the Python course! The recursion chapter was tricky but fun. Does anyone have good resources for advanced algorithms?"
+                android:text="content"
+                android:textSize="15sp"
                 android:textColor="@color/text_primary"
-                android:textSize="16sp"
-                android:lineSpacingExtra="4dp"
-                android:layout_marginBottom="24dp"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider"
-                android:layout_marginBottom="24dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Comments (2)"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_ai_buddy_avatar"
-                    android:layout_marginEnd="12dp"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@drawable/bg_input_outline"
-                    android:padding="12dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Bob D."
-                        android:textStyle="bold"
-                        android:textSize="13sp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Great job! Check out LeetCode for practice."
-                        android:textColor="@color/text_primary"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_ai_buddy_avatar"
-                    android:layout_marginEnd="12dp"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@drawable/bg_input_outline"
-                    android:padding="12dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Charlie"
-                        android:textStyle="bold"
-                        android:textSize="13sp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Keep it up!"
-                        android:textColor="@color/text_primary"/>
-                </LinearLayout>
-            </LinearLayout>
+                android:layout_marginTop="12dp"/>
 
         </LinearLayout>
-    </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:orientation="horizontal"
-        android:background="@color/bg_main"
-        android:elevation="4dp">
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Add a comment..."
-            android:background="@drawable/bg_input_outline"
-            android:padding="12dp"
-            android:textSize="14sp"/>
-        <ImageView
-            android:id="@+id/btn_send_comment"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_send"
-            app:tint="@color/brand_black"
-            android:padding="12dp"/>
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

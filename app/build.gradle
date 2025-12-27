@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
-    // 【修改】移除了 kotlin 相关插件，因为你是纯 Java 项目
 }
 
 android {
@@ -10,14 +9,14 @@ android {
 
     defaultConfig {
         applicationId "com.example.edubridge"
-        minSdk 26 // 保持 26 以支持图标
+        minSdk 26
         targetSdk 34
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        // 【新增】Room 数据库配置 (导出 Schema 位置，防止警告)
+        // Room schema export (optional)
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
@@ -31,10 +30,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     buildFeatures {
         viewBinding true
     }
@@ -45,32 +46,31 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    // 【重要修改】Room 数据库 (Java 版)
-    // 必须使用 annotationProcessor 而不是 kapt
+    // Room (Java)
     implementation 'androidx.room:room-runtime:2.6.1'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
 
-    // 移除 room-ktx，因为那是给 Kotlin 用的
-
-    // Firebase (Java 版)
+    // Firebase (BoM)
     implementation platform('com.google.firebase:firebase-bom:32.7.0')
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-analytics'
 
-    // 图片加载 Glide (Java 版)
+    // ✅ FCM 必须有这个，不然 MyFirebaseMessagingService 全部 “cannot resolve”
+    implementation 'com.google.firebase:firebase-messaging'
+
+    // Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
-    // 网络请求 Retrofit
+    // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-    // Lifecycle (Java 兼容)
+    // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
 
-    // 测试库
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

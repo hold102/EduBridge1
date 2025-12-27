@@ -10,12 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CreatePostActivity extends AppCompatActivity {
+
+    private static final long POINTS_PER_POST = 5;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -31,10 +35,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
         etContent = findViewById(R.id.et_content);
 
-        // Close
         findViewById(R.id.btn_close).setOnClickListener(v -> finish());
-
-        // Post
         findViewById(R.id.btn_post_action).setOnClickListener(v -> publishPost());
     }
 
@@ -51,33 +52,50 @@ public class CreatePostActivity extends AppCompatActivity {
             return;
         }
 
-        String uid = user.getUid();
-        String email = user.getEmail();
+        final String uid = user.getUid();
+        final String email = user.getEmail();
 
-        // 名字兜底：邮箱前缀
-        String userName = "User";
+        // ✅ Build display name (English only)
+        String userName;
         if (!TextUtils.isEmpty(user.getDisplayName())) {
             userName = user.getDisplayName();
         } else if (!TextUtils.isEmpty(email) && email.contains("@")) {
             userName = email.substring(0, email.indexOf("@"));
         } else if (!TextUtils.isEmpty(email)) {
             userName = email;
+        } else {
+            userName = "Student";
         }
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("authorId", uid);            // ✅关键字段
-        data.put("userName", userName);
-        data.put("content", content);
-        data.put("createdAt", Timestamp.now());
-        data.put("avatarRes", 0);            // 默认头像
+        // 1) Post data
+        Map<String, Object> post = new HashMap<>();
+        post.put("authorId", uid);
+        post.put("userName", userName);
+        post.put("content", content);
+        post.put("createdAt", Timestamp.now());
+        post.put("avatarRes", 0);
 
+        // Disable button to prevent double click
         findViewById(R.id.btn_post_action).setEnabled(false);
 
-        db.collection("posts")
-                .add(data)
-                .addOnSuccessListener(docRef -> {
-                    Toast.makeText(this, "Posted successfully!", Toast.LENGTH_SHORT).show();
-                    finish(); // 回到列表，snapshotListener 自动刷新
+        // 2) Batch: add post + update points + store userName
+        WriteBatch batch = db.batch();
+
+        DocumentReference newPostRef = db.collection("posts").document();
+        batch.set(newPostRef, post);
+
+        DocumentReference userRef = db.collection("users").document(uid);
+
+        // ✅ store userName for leaderboard
+        PointsManager.applyUserName(batch, userRef, userName);
+
+        // ✅ +5 per post (centralized)
+        PointsManager.applyAwardPoints(batch, userRef, POINTS_PER_POST, "create_post");
+
+        batch.commit()
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Posted! +" + POINTS_PER_POST + " points", Toast.LENGTH_SHORT).show();
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     findViewById(R.id.btn_post_action).setEnabled(true);

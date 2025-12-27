@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">EduBridge</string>
+
+        <string name="back">Back</string>
+        <string name="leaderboard_title">Leaderboard</string>
+        <string name="leaderboard_name">Name</string>
+        <string name="leaderboard_points">Points</string>
+
 </resources>

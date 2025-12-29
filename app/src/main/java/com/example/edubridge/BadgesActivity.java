@@ -2,6 +2,7 @@ package com.example.edubridge;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -32,6 +33,10 @@ public class BadgesActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListenerRegistration userListener;
 
+    // Header fields (M2.4)
+    private TextView tvBadgesXp;
+    private TextView tvBadgesCount;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,13 +44,18 @@ public class BadgesActivity extends AppCompatActivity {
 
         // Back
         View btnBack = findViewById(R.id.btn_back);
-        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
+        if (btnBack != null)
+            btnBack.setOnClickListener(v -> finish());
 
         recycler = findViewById(R.id.recycler_badges);
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new BadgeAdapter(badges);
         recycler.setAdapter(adapter);
+
+        // Header (M2.4)
+        tvBadgesXp = findViewById(R.id.tv_badges_xp);
+        tvBadgesCount = findViewById(R.id.tv_badges_count);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -73,13 +83,16 @@ public class BadgesActivity extends AppCompatActivity {
     }
 
     private void listenUser(String uid) {
-        if (userListener != null) userListener.remove();
+        if (userListener != null)
+            userListener.remove();
 
         userListener = db.collection("users")
                 .document(uid)
                 .addSnapshotListener((snapshot, error) -> {
-                    if (error != null) return;
-                    if (snapshot == null || !snapshot.exists()) return;
+                    if (error != null)
+                        return;
+                    if (snapshot == null || !snapshot.exists())
+                        return;
 
                     // ✅ 防止本地写入造成重复 Toast
                     if (snapshot.getMetadata() != null && snapshot.getMetadata().hasPendingWrites()) {
@@ -96,11 +109,13 @@ public class BadgesActivity extends AppCompatActivity {
     private void updateBadgeUI(DocumentSnapshot snapshot) {
         long points = 0L;
         Long p = snapshot.getLong("totalPoints");
-        if (p != null) points = p;
+        if (p != null)
+            points = p;
 
         Set<String> unlockedSet = new HashSet<>();
         List<String> unlocked = (List<String>) snapshot.get("badges");
-        if (unlocked != null) unlockedSet.addAll(unlocked);
+        if (unlocked != null)
+            unlockedSet.addAll(unlocked);
 
         for (Badge b : badges) {
             boolean unlockedByRecord = unlockedSet.contains(b.getId());
@@ -108,16 +123,27 @@ public class BadgesActivity extends AppCompatActivity {
             b.setUnlocked(unlockedByRecord || unlockedByPoints);
         }
         adapter.notifyDataSetChanged();
+
+        // Update header (M2.4)
+        if (tvBadgesXp != null) {
+            tvBadgesXp.setText(points + " XP");
+        }
+        if (tvBadgesCount != null) {
+            int earnedCount = unlockedSet.size();
+            tvBadgesCount.setText(earnedCount + "/" + badges.size() + " Badges Earned");
+        }
     }
 
     private void unlockMissingBadgesIfNeeded(String uid, DocumentSnapshot snapshot) {
         long points = 0L;
         Long p = snapshot.getLong("totalPoints");
-        if (p != null) points = p;
+        if (p != null)
+            points = p;
 
         Set<String> unlockedSet = new HashSet<>();
         List<String> unlocked = (List<String>) snapshot.get("badges");
-        if (unlocked != null) unlockedSet.addAll(unlocked);
+        if (unlocked != null)
+            unlockedSet.addAll(unlocked);
 
         // ✅ 如果 points 达到门槛但 badges 里还没有 -> 触发 toast + 写入 arrayUnion
         for (Badge b : badges) {

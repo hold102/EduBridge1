@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -42,14 +43,111 @@ public class SettingsActivity extends AppCompatActivity {
                 editor.apply();
 
                 if (isChecked) {
-                    Toast.makeText(SettingsActivity.this, "Accessibility Mode: Text-to-Speech ON", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Accessibility Mode: Text-to-Speech ON", Toast.LENGTH_SHORT)
+                            .show();
                 } else {
-                    Toast.makeText(SettingsActivity.this, "Accessibility Mode: Text-to-Speech OFF", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Accessibility Mode: Text-to-Speech OFF", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
         });
 
-        // 4. Log Out (REAL Firebase sign out)
+        // 4. Learning Goal Logic (M2.2)
+        com.google.android.material.textfield.TextInputEditText etLearningGoal = findViewById(R.id.et_learning_goal);
+        android.widget.Button btnSaveGoal = findViewById(R.id.btn_save_goal);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String uid = user.getUid();
+            com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore
+                    .getInstance();
+
+            // Load current goal
+            db.collection("users").document(uid).get().addOnSuccessListener(snapshot -> {
+                if (snapshot.exists()) {
+                    String currentGoal = snapshot.getString("learningGoal");
+                    if (currentGoal != null && etLearningGoal != null) {
+                        etLearningGoal.setText(currentGoal);
+                    }
+                }
+            });
+
+            // Save goal
+            if (btnSaveGoal != null) {
+                btnSaveGoal.setOnClickListener(v -> {
+                    String newGoal = (etLearningGoal != null && etLearningGoal.getText() != null)
+                            ? etLearningGoal.getText().toString().trim()
+                            : "";
+
+                    if (newGoal.isEmpty()) {
+                        Toast.makeText(SettingsActivity.this, "Please enter a valid goal.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    java.util.Map<String, Object> update = new java.util.HashMap<>();
+                    update.put("learningGoal", newGoal);
+
+                    db.collection("users").document(uid)
+                            .set(update, com.google.firebase.firestore.SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> Toast.makeText(SettingsActivity.this,
+                                    "Preferences Saved! Check your Dashboard.", Toast.LENGTH_LONG).show())
+                            .addOnFailureListener(e -> Toast.makeText(SettingsActivity.this,
+                                    "Error saving: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                });
+            }
+
+            // 5. Notification Preferences (M2.3)
+            SwitchMaterial switchCourseUpdates = findViewById(R.id.switch_course_updates);
+            SwitchMaterial switchReminders = findViewById(R.id.switch_reminders);
+            SwitchMaterial switchAchievements = findViewById(R.id.switch_achievements);
+            SwitchMaterial switchAnnouncements = findViewById(R.id.switch_announcements);
+
+            // Load preferences
+            db.collection("users").document(uid).get().addOnSuccessListener(snapshot -> {
+                if (snapshot.exists()) {
+                    Boolean prefCourse = snapshot.getBoolean("prefCourseUpdates");
+                    Boolean prefReminder = snapshot.getBoolean("prefReminders");
+                    Boolean prefAchieve = snapshot.getBoolean("prefAchievements");
+                    Boolean prefAnnounce = snapshot.getBoolean("prefAnnouncements");
+
+                    if (switchCourseUpdates != null)
+                        switchCourseUpdates.setChecked(prefCourse == null || prefCourse);
+                    if (switchReminders != null)
+                        switchReminders.setChecked(prefReminder == null || prefReminder);
+                    if (switchAchievements != null)
+                        switchAchievements.setChecked(prefAchieve == null || prefAchieve);
+                    if (switchAnnouncements != null)
+                        switchAnnouncements.setChecked(prefAnnounce == null || prefAnnounce);
+                }
+            });
+
+            // Save on toggle change
+            android.widget.CompoundButton.OnCheckedChangeListener prefListener = (buttonView, isChecked) -> {
+                java.util.Map<String, Object> notifPrefs = new java.util.HashMap<>();
+                if (switchCourseUpdates != null)
+                    notifPrefs.put("prefCourseUpdates", switchCourseUpdates.isChecked());
+                if (switchReminders != null)
+                    notifPrefs.put("prefReminders", switchReminders.isChecked());
+                if (switchAchievements != null)
+                    notifPrefs.put("prefAchievements", switchAchievements.isChecked());
+                if (switchAnnouncements != null)
+                    notifPrefs.put("prefAnnouncements", switchAnnouncements.isChecked());
+
+                db.collection("users").document(uid)
+                        .set(notifPrefs, com.google.firebase.firestore.SetOptions.merge());
+            };
+
+            if (switchCourseUpdates != null)
+                switchCourseUpdates.setOnCheckedChangeListener(prefListener);
+            if (switchReminders != null)
+                switchReminders.setOnCheckedChangeListener(prefListener);
+            if (switchAchievements != null)
+                switchAchievements.setOnCheckedChangeListener(prefListener);
+            if (switchAnnouncements != null)
+                switchAnnouncements.setOnCheckedChangeListener(prefListener);
+        }
+
+        // 5. Log Out (REAL Firebase sign out)
         findViewById(R.id.btn_logout).setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(SettingsActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();

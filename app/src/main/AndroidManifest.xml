@@ -49,6 +49,7 @@
 
         <activity android:name=".BadgesActivity" />
         <activity android:name=".LeaderboardActivity" />
+        <activity android:name=".NotificationsActivity" />
 
         <!-- ✅ 必须注册：FCM 接收 Service -->
         <service

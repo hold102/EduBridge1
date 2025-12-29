@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="8dp">
+
+    <!-- AI Avatar (shown only for AI messages) -->
+    <ImageView
+        android:id="@+id/iv_ai_avatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_ai_buddy_avatar"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone" />
+
+    <!-- Message Bubble Container -->
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <!-- User Message (right-aligned) -->
+        <TextView
+            android:id="@+id/tv_user_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="@drawable/bg_chat_user"
+            android:padding="12dp"
+            android:maxWidth="280dp"
+            android:textColor="@color/brand_white"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <!-- AI Message (left-aligned) -->
+        <TextView
+            android:id="@+id/tv_ai_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="@drawable/bg_input_outline"
+            android:padding="12dp"
+            android:maxWidth="280dp"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Spacer for AI avatar alignment (shown only for user messages) -->
+    <View
+        android:id="@+id/view_avatar_spacer"
+        android:layout_width="40dp"
+        android:layout_height="1dp"
+        android:visibility="gone" />
+</LinearLayout>

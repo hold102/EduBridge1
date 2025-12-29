@@ -3,25 +3,38 @@ package com.example.edubridge.data.local; // Assumes your package name
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
+import com.example.edubridge.data.local.dao.ChatMessageDao;
+import com.example.edubridge.data.local.dao.CommunityPostDao;
 import com.example.edubridge.data.local.dao.CourseDao;
 import com.example.edubridge.data.local.dao.NotificationDao;
+import com.example.edubridge.data.local.dao.PlannerTaskDao;
+import com.example.edubridge.data.local.entity.ChatMessage;
 import com.example.edubridge.data.local.entity.Course;
+import com.example.edubridge.data.local.entity.LocalCommunityPost;
 import com.example.edubridge.data.local.entity.Notification;
+import com.example.edubridge.data.local.entity.PlannerTask;
 
 /**
  * The main database class for the application.
  * Utilizes the Singleton pattern to ensure a single database instance
  * lifecycle.
  * <p>
- * Version 5: Added Notification entity for M2.3 Push Notifications.
+ * Version 8: Added LocalCommunityPost entity for offline community posts.
  * </p>
  */
-@Database(entities = { Course.class, Notification.class }, version = 5, exportSchema = false)
+@Database(entities = { Course.class, Notification.class, ChatMessage.class,
+        PlannerTask.class, LocalCommunityPost.class }, version = 8, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract CourseDao courseDao();
 
     public abstract NotificationDao notificationDao();
+
+    public abstract ChatMessageDao chatMessageDao();
+
+    public abstract PlannerTaskDao plannerTaskDao();
+
+    public abstract CommunityPostDao communityPostDao();
 
     private static volatile AppDatabase INSTANCE;
 

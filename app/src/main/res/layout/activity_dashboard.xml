@@ -17,11 +17,15 @@
 
         <!-- Home icon -->
         <ImageView
+            android:id="@+id/btn_home"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_home"
             android:layout_marginEnd="16dp"
-            android:contentDescription="@null" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Go to login" />
 
         <!-- Middle content -->
         <LinearLayout
@@ -127,9 +131,10 @@
                         android:contentDescription="@null" />
 
                     <TextView
+                        android:id="@+id/tv_streak_days"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3 Days"
+                        android:text="0 Days"
                         android:textStyle="bold"
                         android:textColor="@color/brand_black" />
                 </LinearLayout>
@@ -275,6 +280,107 @@
                         app:backgroundTint="@color/brand_black"
                         app:cornerRadius="8dp"
                         android:layout_marginTop="12dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ================= LEVEL PROGRESSION (M4.2) ================= -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Level"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/brand_black"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="@color/brand_black"
+                app:strokeWidth="2dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/bg_card"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <!-- Level Badge -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:cardCornerRadius="32dp"
+                        app:cardBackgroundColor="@color/brand_black"
+                        app:cardElevation="4dp"
+                        android:layout_marginEnd="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tv_level_number"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="1"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/brand_white" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="LVL"
+                                android:textSize="10sp"
+                                android:textColor="@color/brand_white"
+                                android:alpha="0.8" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Level Info -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_level_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Beginner"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/brand_black" />
+
+                        <TextView
+                            android:id="@+id/tv_level_xp_progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 / 100 XP to next level"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Progress Bar -->
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/pb_level_progress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:indicatorColor="@color/brand_black"
+                            app:trackColor="#E0E0E0"
+                            app:trackCornerRadius="4dp"
+                            app:trackThickness="8dp"
+                            android:progress="0" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_verify_email"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="24dp"
-    android:background="@android:color/white">
+    android:padding="32dp"
+    android:background="@color/bg_main">
+
+    <!-- Email Icon -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:cardCornerRadius="60dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/brand_black"
+        android:layout_marginBottom="32dp">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:src="@android:drawable/ic_dialog_email"
+            app:tint="@color/brand_white"
+            android:contentDescription="Email verification"/>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Title -->
     <TextView
@@ -16,77 +35,211 @@
         android:text="Verify Your Email"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_marginBottom="12dp" />
+        android:textColor="@color/brand_black"
+        android:layout_marginBottom="16dp" />
 
-    <!-- Description -->
-    <TextView
-        android:id="@+id/tv_desc"
+    <!-- Description Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:strokeColor="@color/brand_black"
+        app:strokeWidth="1dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/bg_card"
+        android:layout_marginBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📬"
+                android:textSize="32sp"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/tv_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="We've sent a verification link to your email address."
+                android:textSize="15sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.3"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Click the link in your email, then tap Continue below."
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Steps Indicator -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="We have sent a verification link to your email.\n\nPlease click the link in your email first."
-        android:textSize="14sp"
-        android:textColor="#666666"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="32dp">
 
-    <!-- Hint -->
-    <TextView
-        android:id="@+id/tv_hint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="After verifying, tap Continue to proceed."
-        android:textSize="13sp"
-        android:textColor="#888888"
-        android:gravity="center"
-        android:layout_marginBottom="24dp" />
+        <!-- Step 1 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                app:cardCornerRadius="18dp"
+                app:cardBackgroundColor="@color/brand_black"
+                app:cardElevation="2dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="1"
+                    android:textColor="@color/brand_white"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Check\nemail"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
 
-    <!-- ✅ Continue Button (ALWAYS visible, colored) -->
-    <Button
+        <!-- Connector -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="2dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/brand_black"/>
+
+        <!-- Step 2 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                app:cardCornerRadius="18dp"
+                app:cardBackgroundColor="@color/brand_black"
+                app:cardElevation="2dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="2"
+                    android:textColor="@color/brand_white"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Click\nlink"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <!-- Connector -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="2dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/brand_black"/>
+
+        <!-- Step 3 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                app:cardCornerRadius="18dp"
+                app:cardBackgroundColor="@color/brand_black"
+                app:cardElevation="2dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="3"
+                    android:textColor="@color/brand_white"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap\ncontinue"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Continue Button -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_continue"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="CONTINUE"
-        android:textAllCaps="true"
+        android:layout_height="60dp"
+        android:text="Continue"
+        android:textAllCaps="false"
         android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#1565C0"
-        android:layout_marginBottom="18dp" />
+        android:textSize="18sp"
+        android:textColor="@color/brand_white"
+        app:backgroundTint="@color/brand_black"
+        app:cornerRadius="30dp"
+        android:layout_marginBottom="16dp" />
 
-    <!-- Resend -->
+    <!-- Resend Email Link -->
     <TextView
         android:id="@+id/tv_resend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Resend Email"
-        android:textSize="16sp"
+        android:text="Didn't receive it? Resend Email"
+        android:textSize="14sp"
+        android:textColor="@color/brand_black"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
         android:padding="12dp"
-        android:minHeight="48dp"
-        android:minWidth="200dp"
-        android:gravity="center"
-        android:layout_marginBottom="10dp"
         android:clickable="true"
-        android:focusable="true" />
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:layout_marginBottom="8dp" />
 
-    <!-- Logout -->
+    <!-- Logout Link -->
     <TextView
         android:id="@+id/tv_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Log out"
-        android:textSize="14sp"
-        android:textColor="#666666"
+        android:text="Use a different account"
+        android:textSize="13sp"
+        android:textColor="@color/text_secondary"
         android:padding="12dp"
-        android:minHeight="48dp"
-        android:minWidth="200dp"
-        android:gravity="center"
         android:clickable="true"
-        android:focusable="true" />
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground" />
 
 </LinearLayout>
-
-
-

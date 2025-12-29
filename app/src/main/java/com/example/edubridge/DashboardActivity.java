@@ -171,6 +171,18 @@ public class DashboardActivity extends AppCompatActivity {
             streakLayout.setOnClickListener(
                     v -> startActivity(new Intent(DashboardActivity.this, DailyCheckInActivity.class)));
         }
+
+        // ✅ Home button -> Logout and navigate to Login
+        View btnHome = findViewById(R.id.btn_home);
+        if (btnHome != null) {
+            btnHome.setOnClickListener(v -> {
+                auth.signOut();
+                Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            });
+        }
     }
 
     private void setUsernameFromAuth(FirebaseUser user) {
@@ -219,7 +231,16 @@ public class DashboardActivity extends AppCompatActivity {
                     if (tvPoints != null)
                         tvPoints.setText("Points: " + points);
 
-                    // 2. Learning Goal (for M2.2)
+                    // 2. Streak Count - update dashboard display
+                    Long streakCount = snapshot.getLong("streakCount");
+                    if (streakCount == null)
+                        streakCount = 0L;
+                    TextView tvStreakDays = findViewById(R.id.tv_streak_days);
+                    if (tvStreakDays != null) {
+                        tvStreakDays.setText(streakCount + " Days");
+                    }
+
+                    // 3. Learning Goal (for M2.2)
                     String goal = snapshot.getString("learningGoal");
                     boolean goalChanged = (goal != null && !goal.equals(userLearningGoal))
                             || (goal == null && userLearningGoal != null);
@@ -231,8 +252,24 @@ public class DashboardActivity extends AppCompatActivity {
                         updateRecommendationUI(cachedCourses);
                     }
 
-                    // 3. Achievement Summary (M2.4)
+                    // 4. Achievement Summary (M2.4)
                     updateAchievementSummary(points, snapshot.get("badges"));
+
+                    // 5. Level Progression (M4.2)
+                    updateLevelProgression(points);
+
+                    // 6. Level-Up Detection (M4.2.4 & M4.2.5)
+                    Long storedLevel = snapshot.getLong("userLevel");
+                    int currentLevel = LevelManager.getLevelForXp(points);
+                    if (storedLevel != null && currentLevel > storedLevel.intValue()) {
+                        // Level up detected - show notification
+                        showLevelUpNotification(currentLevel);
+                    }
+                    // Update stored level if needed
+                    if (storedLevel == null || storedLevel.intValue() != currentLevel) {
+                        db.collection("users").document(uid)
+                                .update("userLevel", currentLevel);
+                    }
                 });
     }
 
@@ -680,8 +717,8 @@ public class DashboardActivity extends AppCompatActivity {
             unlockedBadgeIds = (List<String>) badgesObj;
         }
 
-        // Update badge count
-        int totalBadges = 5; // We have 5 defined badges
+        // Update badge count (using BadgeDefinitions for total)
+        int totalBadges = BadgeDefinitions.getTotalBadgeCount();
         int earnedBadges = unlockedBadgeIds.size();
         if (tvBadgeCount != null) {
             tvBadgeCount.setText(earnedBadges + "/" + totalBadges + " Badges");
@@ -711,6 +748,70 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    // ===== M4.2 Level Progression Methods =====
+
+    /**
+     * M4.2.3 - Update level progression UI.
+     * Shows current level, title, progress bar, and XP info.
+     */
+    private void updateLevelProgression(long totalXp) {
+        int level = LevelManager.getLevelForXp(totalXp);
+        String title = LevelManager.getLevelTitle(level);
+        int progressPercent = LevelManager.getProgressPercent(totalXp);
+        long xpToNext = LevelManager.getXpToNextLevel(totalXp);
+        long currentLevelXp = LevelManager.getXpForLevel(level);
+        long nextLevelXp = LevelManager.getXpForNextLevel(level);
+
+        // Update level number badge
+        TextView tvLevelNumber = findViewById(R.id.tv_level_number);
+        if (tvLevelNumber != null) {
+            tvLevelNumber.setText(String.valueOf(level));
+        }
+
+        // Update level title
+        TextView tvLevelTitle = findViewById(R.id.tv_level_title);
+        if (tvLevelTitle != null) {
+            tvLevelTitle.setText(title);
+        }
+
+        // Update XP progress text
+        TextView tvLevelXpProgress = findViewById(R.id.tv_level_xp_progress);
+        if (tvLevelXpProgress != null) {
+            if (level >= LevelManager.MAX_LEVEL) {
+                tvLevelXpProgress.setText("Max level reached! 🏆");
+            } else {
+                long xpInCurrentLevel = totalXp - currentLevelXp;
+                long xpNeeded = nextLevelXp - currentLevelXp;
+                tvLevelXpProgress.setText(xpInCurrentLevel + " / " + xpNeeded + " XP to Level " + (level + 1));
+            }
+        }
+
+        // Update progress bar
+        com.google.android.material.progressindicator.LinearProgressIndicator pbLevelProgress = findViewById(
+                R.id.pb_level_progress);
+        if (pbLevelProgress != null) {
+            pbLevelProgress.setProgress(progressPercent);
+        }
+    }
+
+    /**
+     * M4.2.5 - Show level-up notification dialog.
+     * Called when user levels up.
+     */
+    private void showLevelUpNotification(int newLevel) {
+        String title = LevelManager.getLevelTitle(newLevel);
+
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("🎉 Level Up!")
+                .setMessage("Congratulations! You've reached Level " + newLevel + "!\n\n" +
+                        "You are now a " + title + "!\n\nKeep learning to unlock more achievements!")
+                .setPositiveButton("Awesome!", null)
+                .show();
+
+        // Also show a Toast
+        Toast.makeText(this, "Level Up! You are now Level " + newLevel + " 🎉", Toast.LENGTH_LONG).show();
     }
 
     @Override

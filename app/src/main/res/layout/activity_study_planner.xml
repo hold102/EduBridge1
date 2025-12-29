@@ -27,110 +27,81 @@
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:paddingHorizontal="24dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="20dp">
 
+            <!-- Overdue Tasks Section -->
             <TextView
+                android:id="@+id/tv_overdue_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Overdue"
+                android:textStyle="bold"
+                android:textColor="#E53935"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_overdue_tasks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone"/>
+
+            <!-- Today's Tasks Section -->
+            <TextView
+                android:id="@+id/tv_today_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Today's Tasks"
                 android:textStyle="bold"
                 android:textColor="@color/brand_black"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"/>
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_today_tasks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_input_outline"
-                android:padding="16dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="@color/brand_black"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="8dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Complete Math Quiz"
-                        android:textStyle="bold"
-                        android:textColor="@color/brand_black"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Due: 5:00 PM"
-                        android:textColor="@color/brand_black"
-                        android:textSize="12sp"/>
-                </LinearLayout>
-            </LinearLayout>
+                android:nestedScrollingEnabled="false"/>
 
+            <!-- Empty State -->
             <LinearLayout
+                android:id="@+id/layout_empty_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/bg_input_outline"
-                android:padding="16dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-                <CheckBox
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:src="@drawable/img_empty_state_cat"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="32dp"
+                    android:alpha="0.8"/>
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:buttonTint="@color/brand_black"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="8dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Read History Chapter"
-                        android:textStyle="bold"
-                        android:textColor="@color/brand_black"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Done"
-                        android:textSize="12sp"
-                        android:textColor="@color/brand_black"/>
-                </LinearLayout>
+                    android:text="All caught up! Time for a nap?"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"/>
             </LinearLayout>
-
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/img_empty_state_cat"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
-                android:alpha="0.8"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="All caught up! Time for a nap?"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/text_secondary"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp"/>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"

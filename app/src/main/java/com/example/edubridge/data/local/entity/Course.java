@@ -1,16 +1,19 @@
-package com.example.edubridge.data.local.entity;
+package com.example.edubridge.data.local;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-// file: data/local/entity/Course.java
 @Entity(tableName = "courses")
-public class Course {
-    @PrimaryKey
-    @NonNull
-    public String courseId;
+public class CourseEntity {
+
+    @PrimaryKey(autoGenerate = true)
+    public int id;
 
     public String title;
     public String description;
+
+    public CourseEntity(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
 }

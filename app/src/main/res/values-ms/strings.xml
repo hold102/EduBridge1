@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name">EduBridge</string>
+
+    <!-- General -->
+    <string name="settings">Tetapan</string>
+    <string name="language">Bahasa</string>
+    <string name="account">Akaun</string>
+    <string name="dashboard">Papan Pemuka</string>
+    <string name="logout">Log Keluar</string>
+    <string name="support">Sokongan</string>
+
+    <!-- Account / Security -->
+    <string name="change_password">Tukar Kata Laluan</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility">Kebolehcapaian (Inklusif)</string>
+    <string name="text_to_speech">Teks ke Pertuturan</string>
+    <string name="tts_desc">Baca kandungan dengan suara</string>
+
+    <!-- Language Options -->
+    <string name="english">English</string>
+    <string name="bahasa_melayu">Bahasa Melayu</string>
+
+    <!-- Auth -->
+    <string name="login">Log Masuk</string>
+    <string name="signup">Daftar</string>
+    <string name="email">E-mel</string>
+    <string name="password">Kata Laluan</string>
+
+    <!-- Courses -->
+    <string name="content_library">Perpustakaan Kandungan</string>
+    <string name="start_course">Mulakan Kursus</string>
+    <string name="resume_course">Sambung Kursus</string>
+
+</resources>

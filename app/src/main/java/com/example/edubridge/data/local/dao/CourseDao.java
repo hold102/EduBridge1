@@ -1,20 +1,17 @@
-package com.example.edubridge.data.local.dao;
+package com.example.edubridge.data.local;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-
-import com.example.edubridge.data.local.entity.Course;
 
 import java.util.List;
 
 @Dao
 public interface CourseDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Course course);
+
+    @Insert
+    void insertCourse(CourseEntity course);
 
     @Query("SELECT * FROM courses")
-    LiveData<List<Course>> getAllCourses();
+    List<CourseEntity> getAllCourses();
 }

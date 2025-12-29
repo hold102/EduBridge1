@@ -45,6 +45,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
+    implementation "androidx.room:room-runtime:2.6.1"
+    annotationProcessor "androidx.room:room-compiler:2.6.1"
+
+
     // 【重要修改】Room 数据库 (Java 版)
     // 必须使用 annotationProcessor 而不是 kapt
     implementation 'androidx.room:room-runtime:2.6.1'

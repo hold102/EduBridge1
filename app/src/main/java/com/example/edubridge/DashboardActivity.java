@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.edubridge.utils.SyncManager;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,6 +37,15 @@ public class DashboardActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_dashboard);
 
+        if (!SyncManager.isOnline(this)) {
+            Toast.makeText(
+                    this,
+                    "Offline mode: using cached data",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+
+
         // 1. Setup Navigation Cards (6 Items)
         setupCard(R.id.card_content_library, ContentLibraryActivity.class);
         setupCard(R.id.card_community, CommunityActivity.class);
@@ -64,4 +74,3 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 }
-

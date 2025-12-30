@@ -735,15 +735,24 @@ public class DashboardActivity extends AppCompatActivity {
                 emptyText.setTextSize(12);
                 layoutRecentBadges.addView(emptyText);
             } else {
-                // Show badge icons (max 5)
+                // Show badge icons (max 5) with correct icon per badge type
                 int limit = Math.min(unlockedBadgeIds.size(), 5);
                 for (int i = 0; i < limit; i++) {
+                    String badgeId = unlockedBadgeIds.get(i);
+                    Badge badge = BadgeDefinitions.getBadgeById(badgeId);
+
                     ImageView badgeIcon = new ImageView(this);
                     int size = (int) (48 * getResources().getDisplayMetrics().density);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
                     params.setMargins(0, 0, (int) (8 * getResources().getDisplayMetrics().density), 0);
                     badgeIcon.setLayoutParams(params);
-                    badgeIcon.setImageResource(R.drawable.ic_achievement_medal);
+
+                    // Use correct icon based on badge type
+                    if (badge != null && badge.getIconRes() != 0) {
+                        badgeIcon.setImageResource(badge.getIconRes());
+                    } else {
+                        badgeIcon.setImageResource(R.drawable.ic_achievement_medal);
+                    }
                     layoutRecentBadges.addView(badgeIcon);
                 }
             }

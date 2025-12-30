@@ -50,6 +50,14 @@
         <activity android:name=".BadgesActivity" />
         <activity android:name=".LeaderboardActivity" />
         <activity android:name=".NotificationsActivity" />
+        
+        <!-- Admin Panel (M6.1) -->
+        <activity android:name=".AdminLoginActivity" />
+        <activity android:name=".AdminDashboardActivity" />
+        
+        <!-- Admin User Management (M6.2) -->
+        <activity android:name=".AdminUserListActivity" />
+        <activity android:name=".AdminUserDetailActivity" />
 
         <!-- ✅ 必须注册：FCM 接收 Service -->
         <service

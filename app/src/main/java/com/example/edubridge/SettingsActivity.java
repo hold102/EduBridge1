@@ -145,6 +145,20 @@ public class SettingsActivity extends AppCompatActivity {
                 switchAchievements.setOnCheckedChangeListener(prefListener);
             if (switchAnnouncements != null)
                 switchAnnouncements.setOnCheckedChangeListener(prefListener);
+
+            // 6. Admin Panel Entry (M6.1) - Show only to admins
+            com.google.android.material.card.MaterialCardView cardAdminPanel = findViewById(R.id.card_admin_panel);
+            if (cardAdminPanel != null) {
+                AdminManager.checkIsAdmin(uid, (isAdmin, role) -> {
+                    if (isAdmin) {
+                        cardAdminPanel.setVisibility(android.view.View.VISIBLE);
+                        cardAdminPanel.setOnClickListener(v -> {
+                            Intent adminIntent = new Intent(SettingsActivity.this, AdminLoginActivity.class);
+                            startActivity(adminIntent);
+                        });
+                    }
+                });
+            }
         }
 
         // 5. Log Out (REAL Firebase sign out)

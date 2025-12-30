@@ -1,5 +1,6 @@
 package com.example.edubridge;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,6 +109,18 @@ public class ContentLibraryActivity extends AppCompatActivity {
                     + "\nDifficulty: " + course.getDifficulty()
                     + " | Path: " + course.getLearningPath());
             icon.setImageResource(course.getImageResId());
+
+            //  CourseDetailActivity
+            item.setOnClickListener(v -> {
+                Intent intent = new Intent(
+                        ContentLibraryActivity.this,
+                        CourseDetailActivity.class
+                );
+                intent.putExtra("EXTRA_TITLE", course.getTitle());
+                intent.putExtra("EXTRA_DESC", course.getDescription());
+                intent.putExtra("EXTRA_ICON", course.getImageResId());
+                startActivity(intent);
+            });
 
             courseContainer.addView(item);
         }

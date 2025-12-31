@@ -109,50 +109,163 @@
                         android:layout_marginTop="8dp"/>
 
                     <!-- Resume / Complete Lesson -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_start_course"
-                        android:text="Resume Learning"
-                        android:textColor="@color/brand_white"
-                        app:backgroundTint="@color/brand_black"
-                        app:cornerRadius="20dp"
-                        android:layout_marginTop="20dp"
+                    <!-- Action Buttons: Enroll / Resume + Cancel -->
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center">
+
+                        <!-- Enroll / Resume Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_start_course"
+                            android:text="Resume Learning"
+                            android:textColor="@color/brand_white"
+                            app:backgroundTint="@color/brand_black"
+                            app:cornerRadius="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <!-- Cancel / Unenroll Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_cancel_course"
+                            android:text="Cancel"
+                            android:textColor="@color/brand_black"
+                            app:backgroundTint="@color/brand_white"
+                            app:strokeColor="@color/brand_black"
+                            app:strokeWidth="2dp"
+                            app:cornerRadius="20dp"
+                            android:layout_marginStart="12dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Syllabus -->
-            <TextView
-                android:text="Syllabus"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginBottom="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <!-- M3.4 Lesson 1 -->
-            <TextView
-                android:id="@+id/tv_chapter_1"
-                android:text="Lesson 1"
-                android:textSize="16sp"
-                android:padding="8dp"
-                android:layout_width="wrap_content"
+            <!-- ===================== MODULE SECTION ===================== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"/>
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/brand_black"
+                app:cardElevation="0dp">
 
-            <!-- M3.4 Lesson 2 (locked visually by default) -->
-            <TextView
-                android:id="@+id/tv_chapter_2"
-                android:text="Lesson 2"
-                android:textSize="16sp"
-                android:padding="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:alpha="0.4"
-                android:layout_marginBottom="16dp"
-                android:clickable="true"
-                android:focusable="true"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Module Header -->
+                    <TextView
+                        android:text="MODULE 1"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:text="Core Learning Module"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textColor="@color/brand_black"
+                        android:layout_marginBottom="16dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <!-- Lesson 1 -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/text_secondary"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:text="Lesson 1"
+                                android:textStyle="bold"
+                                android:textSize="14sp"
+                                android:textColor="@color/text_secondary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                            <!-- IMPORTANT: ID unchanged -->
+                            <TextView
+                                android:id="@+id/tv_chapter_1"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/brand_black"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:text="Activity: Text-based Learning"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_secondary"
+                                android:layout_marginTop="4dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Lesson 2 -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/text_secondary"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:text="Lesson 2"
+                                android:textStyle="bold"
+                                android:textSize="14sp"
+                                android:textColor="@color/text_secondary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                            <!-- IMPORTANT: ID unchanged -->
+                            <TextView
+                                android:id="@+id/tv_chapter_2"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/brand_black"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:text="Activity: Quiz-based Learning"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_secondary"
+                                android:layout_marginTop="4dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
 
             <!-- Prerequisites -->
             <TextView

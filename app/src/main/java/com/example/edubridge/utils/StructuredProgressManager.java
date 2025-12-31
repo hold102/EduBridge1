@@ -1,65 +1,75 @@
 package com.example.edubridge.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 /**
  * Manages structured content progress for M3.4.
- *
- * Structure:
- * Course -> Module (implicit) -> Lesson -> Activity
- *
- * Progress is stored locally using SharedPreferences
- * to support offline usage.
+ * Progress is stored locally to support offline usage.
  */
 public class StructuredProgressManager {
 
     private static final String PREF_NAME = "structured_content_progress";
 
     /**
-     * Marks a specific lesson as completed.
+     * Check if a specific lesson is completed.
+     */
+    public static boolean isLessonCompleted(Context context,
+                                            String courseTitle,
+                                            int lessonIndex) {
+        SharedPreferences prefs =
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+
+        return prefs.getBoolean(courseTitle + "_lesson_" + lessonIndex, false);
+    }
+
+    /**
+     * Mark a lesson as completed.
      */
     public static void markLessonCompleted(Context context,
                                            String courseTitle,
                                            int lessonIndex) {
 
-        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean(buildLessonKey(courseTitle, lessonIndex), true)
+        SharedPreferences prefs =
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+
+        prefs.edit()
+                .putBoolean(courseTitle + "_lesson_" + lessonIndex, true)
                 .apply();
     }
 
     /**
-     * Checks whether a specific lesson is completed.
-     */
-    public static boolean isLessonCompleted(Context context,
-                                            String courseTitle,
-                                            int lessonIndex) {
-
-        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                .getBoolean(buildLessonKey(courseTitle, lessonIndex), false);
-    }
-
-    /**
-     * Returns the number of completed lessons for a course.
+     * Returns how many lessons are completed in this course.
      */
     public static int getCompletedLessons(Context context,
                                           String courseTitle,
                                           int totalLessons) {
 
-        int completed = 0;
+        int count = 0;
         for (int i = 1; i <= totalLessons; i++) {
             if (isLessonCompleted(context, courseTitle, i)) {
-                completed++;
+                count++;
             }
         }
-        return completed;
+        return count;
     }
 
     /**
-     * Builds a unique key for each lesson.
+     * Clears all structured progress for a course.
+     * Used when user unenrolls.
      */
-    private static String buildLessonKey(String courseTitle,
-                                         int lessonIndex) {
-        return courseTitle + "_lesson_" + lessonIndex;
+    public static void clearCourse(Context context,
+                                   String courseTitle,
+                                   int totalLessons) {
+
+        SharedPreferences.Editor editor =
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                        .edit();
+
+        for (int i = 1; i <= totalLessons; i++) {
+            editor.remove(courseTitle + "_lesson_" + i);
+        }
+
+        editor.apply();
     }
 }

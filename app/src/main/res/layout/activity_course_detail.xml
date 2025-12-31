@@ -99,6 +99,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
+
                     <RatingBar
                         android:id="@+id/ratingBar_user"
                         android:layout_width="wrap_content"
@@ -107,6 +108,7 @@
                         android:stepSize="1.0"
                         android:layout_marginTop="8dp"/>
 
+                    <!-- Resume / Complete Lesson -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_start_course"
                         android:text="Resume Learning"
@@ -128,18 +130,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
+            <!-- M3.4 Lesson 1 -->
             <TextView
                 android:id="@+id/tv_chapter_1"
-                android:text="Chapter 1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/tv_chapter_2"
-                android:text="Chapter 2"
+                android:text="Lesson 1"
+                android:textSize="16sp"
+                android:padding="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"/>
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- M3.4 Lesson 2 (locked visually by default) -->
+            <TextView
+                android:id="@+id/tv_chapter_2"
+                android:text="Lesson 2"
+                android:textSize="16sp"
+                android:padding="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.4"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true"/>
 
             <!-- Prerequisites -->
             <TextView

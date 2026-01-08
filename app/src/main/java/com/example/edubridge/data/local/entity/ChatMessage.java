@@ -2,6 +2,7 @@ package com.example.edubridge.data.local.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore; // ✅ 新增
 import androidx.room.PrimaryKey;
 
 /**
@@ -14,25 +15,15 @@ public class ChatMessage {
     @NonNull
     public String id;
 
-    /**
-     * The message content.
-     */
     public String content;
-
-    /**
-     * true = user message, false = AI response
-     */
     public boolean isUser;
-
-    /**
-     * Timestamp when the message was created.
-     */
     public long timestamp;
 
     public ChatMessage() {
         this.id = "";
     }
 
+    @Ignore
     public ChatMessage(@NonNull String id, String content, boolean isUser, long timestamp) {
         this.id = id;
         this.content = content;

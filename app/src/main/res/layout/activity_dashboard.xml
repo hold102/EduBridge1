@@ -7,6 +7,12 @@
     android:background="@color/bg_main">
 
     <!-- ================= Header ================= -->
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="git checkout -b integration-lab" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.edubridge.utils.AnalyticsManager; // ✅ Module 5.3 import
 
 public class CourseDetailActivity extends AppCompatActivity {
 
@@ -25,7 +28,10 @@ public class CourseDetailActivity extends AppCompatActivity {
         // 2. Get Data
         String title = getIntent().getStringExtra("EXTRA_TITLE");
         String desc = getIntent().getStringExtra("EXTRA_DESC");
-        int iconResId = getIntent().getIntExtra("EXTRA_ICON", R.drawable.ic_subject_math);
+        int iconResId = getIntent().getIntExtra(
+                "EXTRA_ICON",
+                R.drawable.ic_subject_math
+        );
 
         // 3. Update Basic UI
         if (title != null) tvTitle.setText(title);
@@ -33,7 +39,6 @@ public class CourseDetailActivity extends AppCompatActivity {
         imgIcon.setImageResource(iconResId);
 
         // 4. DYNAMIC SYLLABUS LOGIC
-        // Hardcoded logic to switch content based on subject name
         if (title != null) {
             if (title.contains("Geography")) {
                 tvChapter1.setText("Map Reading & Coordinates");
@@ -56,7 +61,16 @@ public class CourseDetailActivity extends AppCompatActivity {
 
         // Start Button
         findViewById(R.id.btn_start_course).setOnClickListener(v -> {
-            Toast.makeText(this, "Resuming " + (title != null ? title : "Course"), Toast.LENGTH_SHORT).show();
+
+
+            AnalyticsManager.recordChapter(this);
+
+
+            Toast.makeText(
+                    this,
+                    "Progress recorded for " + (title != null ? title : "course"),
+                    Toast.LENGTH_SHORT
+            ).show();
         });
     }
 }

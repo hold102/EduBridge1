@@ -2,6 +2,7 @@ package com.example.edubridge;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -12,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
@@ -21,6 +21,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Badges Activity for M4.3 Digital Badges.
+ * 
+ * Features:
+ * - M4.3.2: Display earned badges in user profile
+ * - M4.3.3: Categorize badges by type
+ * - M4.3.4: View locked badges with unlock conditions
+ */
 public class BadgesActivity extends AppCompatActivity {
 
     private RecyclerView recycler;
@@ -32,6 +40,10 @@ public class BadgesActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListenerRegistration userListener;
 
+    // Header fields (M2.4)
+    private TextView tvBadgesXp;
+    private TextView tvBadgesCount;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,13 +51,18 @@ public class BadgesActivity extends AppCompatActivity {
 
         // Back
         View btnBack = findViewById(R.id.btn_back);
-        if (btnBack != null) btnBack.setOnClickListener(v -> finish());
+        if (btnBack != null)
+            btnBack.setOnClickListener(v -> finish());
 
         recycler = findViewById(R.id.recycler_badges);
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new BadgeAdapter(badges);
         recycler.setAdapter(adapter);
+
+        // Header (M2.4)
+        tvBadgesXp = findViewById(R.id.tv_badges_xp);
+        tvBadgesCount = findViewById(R.id.tv_badges_count);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -61,76 +78,83 @@ public class BadgesActivity extends AppCompatActivity {
         listenUser(user.getUid());
     }
 
-    // ✅ 给每个 badge 一个稳定的 id（写入 Firestore 用）
+    /**
+     * Build the complete badge list from BadgeDefinitions (M4.3.3).
+     * Badges are grouped by category for display.
+     */
     private void buildBadgeList() {
         badges.clear();
-        badges.add(new Badge("first_post", "First Post", "Earn 5 points", 5));
-        badges.add(new Badge("contributor", "Contributor", "Earn 20 points", 20));
-        badges.add(new Badge("rising_star", "Rising Star", "Earn 50 points", 50));
-        badges.add(new Badge("community_hero", "Community Hero", "Earn 100 points", 100));
-        badges.add(new Badge("legend", "Legend", "Earn 200 points", 200));
+
+        // Get all badges from central definitions (M4.3.3)
+        // Already sorted by category in BadgeDefinitions
+        badges.addAll(BadgeDefinitions.getAllBadges());
+
         adapter.notifyDataSetChanged();
     }
 
     private void listenUser(String uid) {
-        if (userListener != null) userListener.remove();
+        if (userListener != null)
+            userListener.remove();
 
         userListener = db.collection("users")
                 .document(uid)
                 .addSnapshotListener((snapshot, error) -> {
-                    if (error != null) return;
-                    if (snapshot == null || !snapshot.exists()) return;
+                    if (error != null)
+                        return;
+                    if (snapshot == null || !snapshot.exists())
+                        return;
 
-                    // ✅ 防止本地写入造成重复 Toast
+                    // Prevent duplicate processing from local writes
                     if (snapshot.getMetadata() != null && snapshot.getMetadata().hasPendingWrites()) {
-                        // 仍然更新 UI，但不触发 unlock/toast
                         updateBadgeUI(snapshot);
                         return;
                     }
 
                     updateBadgeUI(snapshot);
-                    unlockMissingBadgesIfNeeded(uid, snapshot);
+
+                    // Check and award any missing badges based on points (M4.3.1)
+                    Long points = snapshot.getLong("totalPoints");
+                    if (points != null) {
+                        BadgeManager.checkAndAwardPointBadges(uid, points);
+                    }
                 });
     }
 
+    /**
+     * Update badge UI based on user data (M4.3.2).
+     */
     private void updateBadgeUI(DocumentSnapshot snapshot) {
         long points = 0L;
         Long p = snapshot.getLong("totalPoints");
-        if (p != null) points = p;
+        if (p != null)
+            points = p;
 
+        // Get user's earned badges
         Set<String> unlockedSet = new HashSet<>();
         List<String> unlocked = (List<String>) snapshot.get("badges");
-        if (unlocked != null) unlockedSet.addAll(unlocked);
+        if (unlocked != null)
+            unlockedSet.addAll(unlocked);
 
+        // Update each badge's unlocked state
         for (Badge b : badges) {
             boolean unlockedByRecord = unlockedSet.contains(b.getId());
-            boolean unlockedByPoints = points >= b.getRequiredPoints();
+            boolean unlockedByPoints = (b.getConditionType() == Badge.ConditionType.POINTS)
+                    && (points >= b.getConditionValue());
             b.setUnlocked(unlockedByRecord || unlockedByPoints);
         }
         adapter.notifyDataSetChanged();
-    }
 
-    private void unlockMissingBadgesIfNeeded(String uid, DocumentSnapshot snapshot) {
-        long points = 0L;
-        Long p = snapshot.getLong("totalPoints");
-        if (p != null) points = p;
-
-        Set<String> unlockedSet = new HashSet<>();
-        List<String> unlocked = (List<String>) snapshot.get("badges");
-        if (unlocked != null) unlockedSet.addAll(unlocked);
-
-        // ✅ 如果 points 达到门槛但 badges 里还没有 -> 触发 toast + 写入 arrayUnion
-        for (Badge b : badges) {
-            boolean reached = points >= b.getRequiredPoints();
-            boolean alreadyRecorded = unlockedSet.contains(b.getId());
-
-            if (reached && !alreadyRecorded) {
-                Toast.makeText(this, "New badge unlocked: " + b.getTitle(), Toast.LENGTH_LONG).show();
-
-                db.collection("users")
-                        .document(uid)
-                        .update("badges", FieldValue.arrayUnion(b.getId()));
+        // Update header (M2.4)
+        if (tvBadgesXp != null) {
+            tvBadgesXp.setText(points + " XP");
+        }
+        if (tvBadgesCount != null) {
+            int earnedCount = 0;
+            for (Badge b : badges) {
+                if (b.isUnlocked())
+                    earnedCount++;
             }
+            tvBadgesCount.setText(earnedCount + "/" + badges.size() + " Badges Earned");
         }
     }
 

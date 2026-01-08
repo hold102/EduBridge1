@@ -6,7 +6,7 @@
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="@android:color/white">
+    app:cardBackgroundColor="@color/bg_card">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,20 +15,34 @@
         android:padding="16dp"
         android:gravity="center_vertical">
 
+        <!-- Badge Icon -->
         <ImageView
             android:id="@+id/iv_badge_icon"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:src="@android:drawable/star_big_off"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:src="@drawable/ic_achievement_medal"
             android:contentDescription="Badge icon"
             android:layout_marginEnd="14dp"/>
 
+        <!-- Badge Info -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
+            <!-- Category Label -->
+            <TextView
+                android:id="@+id/tv_badge_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACHIEVEMENT"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_hint"
+                android:letterSpacing="0.1"/>
+
+            <!-- Title -->
             <TextView
                 android:id="@+id/tv_badge_title"
                 android:layout_width="wrap_content"
@@ -36,8 +50,10 @@
                 android:text="Badge Title"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="@color/text_primary"/>
+                android:textColor="@color/brand_black"
+                android:layout_marginTop="2dp"/>
 
+            <!-- Description (for unlocked) / Unlock condition (for locked) -->
             <TextView
                 android:id="@+id/tv_badge_desc"
                 android:layout_width="wrap_content"
@@ -45,17 +61,32 @@
                 android:text="Description"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
-                android:layout_marginTop="2dp"/>
+                android:layout_marginTop="4dp"/>
+
+            <!-- Unlock Condition (shown when locked) -->
+            <TextView
+                android:id="@+id/tv_unlock_condition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔒 Earn 50 points to unlock"
+                android:textSize="11sp"
+                android:textColor="@color/text_hint"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"/>
         </LinearLayout>
 
+        <!-- Status -->
         <TextView
             android:id="@+id/tv_badge_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="LOCKED"
             android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="@color/brand_black"/>
+            android:textSize="11sp"
+            android:textColor="@color/brand_black"
+            android:background="@drawable/bg_badge_primary"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"/>
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

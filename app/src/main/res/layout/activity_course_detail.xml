@@ -6,18 +6,20 @@
     android:orientation="vertical"
     android:background="@color/bg_main">
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp"
+        android:padding="16dp"
         android:gravity="center_vertical"
         android:background="@color/bg_main">
         <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/brand_black"/>
+            app:tint="@color/brand_black"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,7 +27,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/brand_black"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="12dp"/>
     </LinearLayout>
 
     <ScrollView
@@ -35,167 +37,436 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="16dp">
 
+            <!-- Course Header Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
-                app:strokeColor="@color/brand_black"
-                app:strokeWidth="2dp"
-                app:cardElevation="0dp"
-                android:layout_marginBottom="24dp">
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/bg_card"
+                android:layout_marginBottom="16dp">
+                
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="24dp"
-                    android:gravity="center">
+                    android:orientation="vertical">
 
+                    <!-- Thumbnail -->
                     <ImageView
-                        android:id="@+id/img_course_icon"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/ic_subject_math"
-                        android:layout_marginBottom="16dp"/>
-
-                    <TextView
-                        android:id="@+id/tv_course_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mathematics 101"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/brand_black"
-                        android:gravity="center"/>
-
-                    <TextView
-                        android:id="@+id/tv_course_desc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Description..."
-                        android:textSize="14sp"
-                        android:textColor="@color/text_secondary"
-                        android:gravity="center"
-                        android:layout_marginTop="8dp"/>
+                        android:id="@+id/img_thumbnail"
+                        android:layout_width="match_parent"
+                        android:layout_height="160dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_nav_library"
+                        android:background="#E8E8E8"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginTop="20dp"
-                        android:gravity="center">
+                        android:padding="16dp">
+
+                        <!-- Badges Row -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:layout_marginBottom="8dp">
+
                             <TextView
+                                android:id="@+id/tv_category"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_category_chip"
+                                android:paddingHorizontal="10dp"
+                                android:paddingVertical="4dp"
+                                android:text="Mathematics"
+                                android:textColor="@color/brand_black"
+                                android:textSize="11sp"/>
+
+                            <TextView
+                                android:id="@+id/tv_difficulty"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/bg_badge_difficulty"
+                                android:paddingHorizontal="10dp"
+                                android:paddingVertical="4dp"
+                                android:text="Beginner"
+                                android:textColor="@android:color/white"
+                                android:textSize="11sp"/>
+                        </LinearLayout>
+
+                        <!-- Title -->
+                        <TextView
+                            android:id="@+id/tv_course_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Course Title"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/brand_black"/>
+
+                        <!-- Description -->
+                        <TextView
+                            android:id="@+id/tv_course_desc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Course description..."
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary"/>
+
+                        <!-- M3.2.3 Meta Info Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Progress"
-                                android:textStyle="bold"
-                                android:textSize="12sp"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="35%"
-                                android:textStyle="bold"
-                                android:textSize="12sp"/>
-                        </LinearLayout>
-                        <ProgressBar
-                            android:id="@+id/progress_bar"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="8dp"
-                            android:max="100"
-                            android:progress="35"
-                            android:progressTint="@color/brand_black"
-                            android:backgroundTint="#E0E0E0"/>
-                    </LinearLayout>
+                                android:orientation="vertical"
+                                android:gravity="center">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Duration"
+                                    android:textSize="11sp"
+                                    android:textColor="@color/text_hint"/>
+                                <TextView
+                                    android:id="@+id/tv_duration"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="4 hours"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/brand_black"/>
+                            </LinearLayout>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_start_course"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Resume Learning"
-                        android:textColor="@color/brand_white"
-                        android:textStyle="bold"
-                        app:backgroundTint="@color/brand_black"
-                        app:cornerRadius="20dp"
-                        android:layout_marginTop="24dp"/>
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/stroke_color"/>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Lessons"
+                                    android:textSize="11sp"
+                                    android:textColor="@color/text_hint"/>
+                                <TextView
+                                    android:id="@+id/tv_lessons"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="12"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/brand_black"/>
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/stroke_color"/>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Effort"
+                                    android:textSize="11sp"
+                                    android:textColor="@color/text_hint"/>
+                                <TextView
+                                    android:id="@+id/tv_effort"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="2-3 hrs/wk"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/brand_black"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- M3.2.5 Enrollment Status Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_enrollment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#E8F5E9"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        
+                        <TextView
+                            android:id="@+id/tv_enrollment_status"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Enrolled"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#2E7D32"/>
+
+                        <TextView
+                            android:id="@+id/tv_progress_percent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="35%"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#2E7D32"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progress_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:trackCornerRadius="4dp"
+                        app:indicatorColor="#4CAF50"
+                        app:trackColor="#C8E6C9"
+                        android:progress="35"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_continue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Continue Learning"
+                        app:backgroundTint="#4CAF50"
+                        app:cornerRadius="8dp"/>
+
+                    <!-- M3.3.3: Unenroll button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_unenroll"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Unenroll from Course"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="#BDBDBD"
+                        app:cornerRadius="8dp"
+                        android:textColor="#757575"/>
+
+                    <!-- Enrolled timestamp -->
+                    <TextView
+                        android:id="@+id/tv_enrolled_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Enrolled on: Jan 1, 2025"
+                        android:textSize="11sp"
+                        android:textColor="#9E9E9E"
+                        android:layout_gravity="center"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Not Enrolled Card (Hidden by default) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_not_enrolled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:strokeColor="@color/stroke_color"
+                app:strokeWidth="1dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Start your learning journey"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_enroll"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Enroll Now"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="@color/brand_black"
+                        app:cornerRadius="8dp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- M3.2.2 Instructor Card -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Syllabus"
+                android:text="Instructor"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginBottom="16dp"/>
+                android:textColor="@color/brand_black"
+                android:layout_marginBottom="8dp"/>
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_input_outline"
-                android:padding="16dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-                <TextView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:text="1"
-                    android:gravity="center"
-                    android:background="@drawable/bg_bubble_user"
-                    android:textColor="@color/brand_white"
-                    android:textStyle="bold"/>
-                <TextView
-                    android:id="@+id/tv_chapter_1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Chapter 1"
-                    android:textColor="@color/brand_black"
-                    android:textStyle="bold"
-                    android:layout_marginHorizontal="16dp"/>
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_media_play"
-                    app:tint="@color/brand_black"/>
-            </LinearLayout>
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/bg_card"
+                android:layout_marginBottom="16dp">
 
-            <LinearLayout
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/img_instructor"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_nav_community"
+                        android:background="@drawable/bg_category_chip"
+                        android:padding="8dp"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <TextView
+                            android:id="@+id/tv_instructor_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dr. John Smith"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/brand_black"/>
+
+                        <TextView
+                            android:id="@+id/tv_instructor_bio"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Expert in Mathematics"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:maxLines="2"
+                            android:ellipsize="end"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- M3.2.1 Learning Objectives -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="What You Will Learn"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/brand_black"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_input_outline"
-                android:padding="16dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/bg_card"
+                android:layout_marginBottom="16dp">
+
                 <TextView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:text="2"
-                    android:gravity="center"
-                    android:background="@drawable/bg_input_outline"
-                    android:textColor="@color/brand_black"
-                    android:textStyle="bold"/>
-                <TextView
-                    android:id="@+id/tv_chapter_2"
-                    android:layout_width="0dp"
+                    android:id="@+id/tv_objectives"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Chapter 2"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginHorizontal="16dp"/>
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_media_play"
-                    app:tint="@color/text_secondary"/>
-            </LinearLayout>
+                    android:padding="14dp"
+                    android:text="• Master fundamental concepts\n• Apply knowledge to real problems\n• Build practical skills"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_primary"
+                    android:lineSpacingExtra="4dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- M3.2.4 Prerequisites -->
+            <TextView
+                android:id="@+id/tv_prereq_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Prerequisites"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/brand_black"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_prerequisites"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#FFF3E0"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tv_prerequisites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="14dp"
+                    android:text="Basic math knowledge recommended"
+                    android:textSize="14sp"
+                    android:textColor="#E65100"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- M3.2.1 Syllabus -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Course Syllabus"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/brand_black"
+                android:layout_marginBottom="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_syllabus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
 
         </LinearLayout>
     </ScrollView>

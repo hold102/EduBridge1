@@ -36,21 +36,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String title = "EduBridge";
         String body = "You have a new notification.";
+        String type = "announcement"; // Default type
+        String screen = null;
 
         // 1) Notification payload
         if (message.getNotification() != null) {
-            if (message.getNotification().getTitle() != null) title = message.getNotification().getTitle();
-            if (message.getNotification().getBody() != null) body = message.getNotification().getBody();
+            if (message.getNotification().getTitle() != null)
+                title = message.getNotification().getTitle();
+            if (message.getNotification().getBody() != null)
+                body = message.getNotification().getBody();
         }
 
-        // 2) Data payload override (更灵活)
-        String screen = null; // dashboard / leaderboard / community / badges ...
+        // 2) Data payload override
         if (message.getData() != null) {
-            if (message.getData().containsKey("title")) title = message.getData().get("title");
-            if (message.getData().containsKey("body")) body = message.getData().get("body");
-            if (message.getData().containsKey("screen")) screen = message.getData().get("screen");
+            if (message.getData().containsKey("title"))
+                title = message.getData().get("title");
+            if (message.getData().containsKey("body"))
+                body = message.getData().get("body");
+            if (message.getData().containsKey("screen"))
+                screen = message.getData().get("screen");
+            if (message.getData().containsKey("type"))
+                type = message.getData().get("type");
         }
 
+        // 3) Save to local Room DB for history
+        saveToRoomDb(title, body, type, screen);
+
+        // 4) Show system notification
         showNotification(title, body, screen);
     }
 
@@ -113,15 +125,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void createNotificationChannelIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager nm = getSystemService(NotificationManager.class);
-            if (nm == null) return;
+            if (nm == null)
+                return;
 
-            if (nm.getNotificationChannel(CHANNEL_ID) != null) return;
+            if (nm.getNotificationChannel(CHANNEL_ID) != null)
+                return;
 
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
                     "EduBridge Notifications",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
+                    NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription("General notifications");
             nm.createNotificationChannel(channel);
         }
@@ -129,7 +142,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void saveTokenToFirestore(String token) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return;
+        if (user == null)
+            return;
 
         String uid = user.getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -139,5 +153,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         update.put("fcmUpdatedAt", FieldValue.serverTimestamp());
 
         db.collection("users").document(uid).set(update, SetOptions.merge());
+    }
+
+    /**
+     * Saves the notification to the local Room database for history.
+     */
+    private void saveToRoomDb(String title, String body, String type, String screen) {
+        com.example.edubridge.data.local.entity.Notification notification = new com.example.edubridge.data.local.entity.Notification();
+
+        notification.id = String.valueOf(System.currentTimeMillis());
+        notification.title = title;
+        notification.body = body;
+        notification.type = type;
+        notification.screen = screen;
+        notification.isRead = false;
+        notification.timestamp = System.currentTimeMillis();
+
+        new Thread(() -> {
+            com.example.edubridge.data.local.AppDatabase
+                    .getInstance(getApplicationContext())
+                    .notificationDao()
+                    .insert(notification);
+        }).start();
     }
 }

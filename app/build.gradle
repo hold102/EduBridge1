@@ -39,6 +39,16 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    // Exclude duplicate META-INF files from dependencies
+    packaging {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt',
+                         'META-INF/license.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt',
+                         'META-INF/notice.txt', 'META-INF/ASL2.0', 'META-INF/*.kotlin_module',
+                         'META-INF/INDEX.LIST', 'META-INF/io.netty.versions.properties']
+        }
+    }
 }
 
 dependencies {
@@ -71,8 +81,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
 
-    // Google Gemini AI - Using REST API via Retrofit (already included)
-    // The Generative AI SDK has compatibility issues, so we use Retrofit directly
+    // Gemini AI - Using REST API via OkHttp (bundled with Retrofit)
+    // Note: google-genai SDK is server-side only, not compatible with Android
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

@@ -17,13 +17,34 @@ import java.util.List;
 /**
  * Adapter for displaying a list of course progress items in the Dashboard.
  * Binds {@link Course} data to the `item_course_progress` layout.
+ * Updated: Added click listener for navigation to CourseDetail.
  */
 public class CourseProgressAdapter extends RecyclerView.Adapter<CourseProgressAdapter.ViewHolder> {
 
     private List<Course> courses = new ArrayList<>();
+    private OnCourseClickListener listener;
+
+    /**
+     * Click listener interface for course items.
+     */
+    public interface OnCourseClickListener {
+        void onCourseClick(Course course);
+    }
+
+    public CourseProgressAdapter() {
+        // Default constructor
+    }
+
+    public CourseProgressAdapter(OnCourseClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void setOnCourseClickListener(OnCourseClickListener listener) {
+        this.listener = listener;
+    }
 
     public void setCourses(List<Course> courses) {
-        this.courses = courses;
+        this.courses = courses != null ? courses : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -38,7 +59,7 @@ public class CourseProgressAdapter extends RecyclerView.Adapter<CourseProgressAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Course course = courses.get(position);
-        holder.bind(course);
+        holder.bind(course, listener);
     }
 
     @Override
@@ -59,7 +80,7 @@ public class CourseProgressAdapter extends RecyclerView.Adapter<CourseProgressAd
             pbProgress = itemView.findViewById(R.id.pb_course_progress);
         }
 
-        public void bind(Course course) {
+        public void bind(Course course, OnCourseClickListener listener) {
             tvTitle.setText(course.title != null ? course.title : "Unknown Course");
 
             // Status logic
@@ -79,6 +100,13 @@ public class CourseProgressAdapter extends RecyclerView.Adapter<CourseProgressAd
 
             pbProgress.setMax(total);
             pbProgress.setProgress(current);
+
+            // Click listener for navigation
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onCourseClick(course);
+                }
+            });
         }
     }
 }

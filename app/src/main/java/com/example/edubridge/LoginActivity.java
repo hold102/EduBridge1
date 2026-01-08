@@ -77,7 +77,8 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                                 finish();
                             } else {
-                                String msg = (task.getException() != null) ? task.getException().getMessage() : "Unknown error";
+                                String msg = (task.getException() != null) ? task.getException().getMessage()
+                                        : "Unknown error";
                                 Toast.makeText(LoginActivity.this, "Login failed: " + msg, Toast.LENGTH_LONG).show();
                             }
                         });
@@ -101,5 +102,3 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 }
-
-

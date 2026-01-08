@@ -52,39 +52,38 @@ public class SignUpActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 if (user == null) {
-                                    Toast.makeText(SignUpActivity.this, "Sign up failed: user is null", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SignUpActivity.this, "Sign up failed: user is null",
+                                            Toast.LENGTH_LONG).show();
                                     return;
                                 }
 
-                                // Set display name (optional but useful for Community/Leaderboard)
-                                UserProfileChangeRequest profileUpdates =
-                                        new UserProfileChangeRequest.Builder()
-                                                .setDisplayName(name)
-                                                .build();
+                                // Set display name
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(name)
+                                        .build();
 
                                 user.updateProfile(profileUpdates)
                                         .addOnCompleteListener(profileTask -> {
-                                            // Send verification email
-                                            user.sendEmailVerification()
-                                                    .addOnCompleteListener(verifyTask -> {
-                                                        if (verifyTask.isSuccessful()) {
-                                                            Toast.makeText(SignUpActivity.this,
-                                                                    "Account created. Verification email sent.",
-                                                                    Toast.LENGTH_LONG).show();
-                                                        } else {
-                                                            String msg = (verifyTask.getException() != null)
-                                                                    ? verifyTask.getException().getMessage()
-                                                                    : "Unknown error";
-                                                            Toast.makeText(SignUpActivity.this,
-                                                                    "Account created, but failed to send verification email: " + msg,
-                                                                    Toast.LENGTH_LONG).show();
-                                                        }
-
-                                                        // Go to Verify Email screen
-                                                        Intent intent = new Intent(SignUpActivity.this, VerifyEmailActivity.class);
-                                                        startActivity(intent);
-                                                        finish();
-                                                    });
+                                            // STEP 1: Save user to Firestore
+                                            saveUserToFirestore(user.getUid(), name, email, () -> {
+                                                // STEP 2: Send verification email
+                                                user.sendEmailVerification()
+                                                        .addOnCompleteListener(verifyTask -> {
+                                                            if (verifyTask.isSuccessful()) {
+                                                                Toast.makeText(SignUpActivity.this,
+                                                                        "Account created. Verification email sent.",
+                                                                        Toast.LENGTH_LONG).show();
+                                                            } else {
+                                                                Toast.makeText(SignUpActivity.this,
+                                                                        "Account created, but email failed.",
+                                                                        Toast.LENGTH_SHORT).show();
+                                                            }
+                                                            // Go to Verify Email screen
+                                                            startActivity(new Intent(SignUpActivity.this,
+                                                                    VerifyEmailActivity.class));
+                                                            finish();
+                                                        });
+                                            });
                                         });
 
                             } else {
@@ -105,7 +104,42 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Save user document to Firestore.
+     * Creates users/{uid} with profile data.
+     */
+    private void saveUserToFirestore(String uid, String name, String email, Runnable onComplete) {
+        com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore
+                .getInstance();
+
+        java.util.Map<String, Object> userData = new java.util.HashMap<>();
+        userData.put("uid", uid);
+        userData.put("email", email);
+        userData.put("name", name);
+        userData.put("createdAt", System.currentTimeMillis());
+        userData.put("enrolledCoursesCount", 0);
+        userData.put("completedCoursesCount", 0);
+        userData.put("totalPoints", 0);
+        userData.put("level", 1);
+        // Admin fields (default to non-admin)
+        userData.put("isAdmin", false);
+        userData.put("adminRole", null);
+        userData.put("isSuspended", false);
+
+        db.collection("users").document(uid)
+                .set(userData)
+                .addOnSuccessListener(aVoid -> {
+                    android.util.Log.d("SignUpActivity", "✅ User saved to Firestore: " + uid);
+                    onComplete.run();
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("SignUpActivity", "❌ Firestore save failed: " + e.getMessage());
+                    Toast.makeText(SignUpActivity.this,
+                            "Warning: Profile save failed - " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                    // Continue anyway so user can still use the app
+                    onComplete.run();
+                });
+    }
 }
-
-
-

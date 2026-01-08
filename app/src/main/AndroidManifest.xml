@@ -58,6 +58,14 @@
         <!-- Admin User Management (M6.2) -->
         <activity android:name=".AdminUserListActivity" />
         <activity android:name=".AdminUserDetailActivity" />
+        
+        <!-- Admin Course Management (M6.3) -->
+        <activity android:name=".AdminCourseListActivity" />
+        <activity android:name=".AdminCourseEditActivity" />
+
+        <!-- M3.4 Structured Content -->
+        <activity android:name=".ModuleListActivity" />
+        <activity android:name=".LessonActivity" />
 
         <!-- ✅ 必须注册：FCM 接收 Service -->
         <service

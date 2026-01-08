@@ -15,13 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.edubridge.data.local.AppDatabase;
 import com.example.edubridge.data.local.dao.PlannerTaskDao;
 import com.example.edubridge.data.local.entity.PlannerTask;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -32,6 +31,7 @@ import java.util.UUID;
  * - Mark tasks as complete
  * - Delete tasks
  * - Automatic overdue detection (tasks past 11:59 PM)
+ * - User-scoped tasks (each user sees only their own tasks)
  */
 public class StudyPlannerActivity extends AppCompatActivity implements PlannerTaskAdapter.TaskClickListener {
 
@@ -47,11 +47,21 @@ public class StudyPlannerActivity extends AppCompatActivity implements PlannerTa
     private List<PlannerTask> overdueTasks = new ArrayList<>();
 
     private PlannerTaskDao taskDao;
+    private String currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study_planner);
+
+        // Get current user ID
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        currentUserId = user.getUid();
 
         // Initialize database
         taskDao = AppDatabase.getInstance(this).plannerTaskDao();
@@ -75,7 +85,7 @@ public class StudyPlannerActivity extends AppCompatActivity implements PlannerTa
         overdueAdapter = new PlannerTaskAdapter(overdueTasks, this);
         rvOverdueTasks.setAdapter(overdueAdapter);
 
-        // Load tasks
+        // Load tasks for current user
         loadTasks();
 
         // Add task button
@@ -95,13 +105,13 @@ public class StudyPlannerActivity extends AppCompatActivity implements PlannerTa
     }
 
     /**
-     * Load tasks from database.
+     * Load tasks from database for current user.
      */
     private void loadTasks() {
         long todayStart = getTodayStart();
 
-        // Today's tasks
-        taskDao.getTodayTasks(todayStart).observe(this, tasks -> {
+        // Today's tasks (filtered by user)
+        taskDao.getTodayTasks(currentUserId, todayStart).observe(this, tasks -> {
             todayTasks.clear();
             if (tasks != null) {
                 todayTasks.addAll(tasks);
@@ -110,8 +120,8 @@ public class StudyPlannerActivity extends AppCompatActivity implements PlannerTa
             updateEmptyState();
         });
 
-        // Overdue tasks
-        taskDao.getOverdueTasks(todayStart).observe(this, tasks -> {
+        // Overdue tasks (filtered by user)
+        taskDao.getOverdueTasks(currentUserId, todayStart).observe(this, tasks -> {
             overdueTasks.clear();
             if (tasks != null) {
                 overdueTasks.addAll(tasks);
@@ -192,11 +202,12 @@ public class StudyPlannerActivity extends AppCompatActivity implements PlannerTa
     }
 
     /**
-     * Create and save new task.
+     * Create and save new task for current user.
      */
     private void createTask(String title, long dueDate) {
         PlannerTask task = new PlannerTask(
                 UUID.randomUUID().toString(),
+                currentUserId, // Associate with current user
                 title,
                 dueDate,
                 false,

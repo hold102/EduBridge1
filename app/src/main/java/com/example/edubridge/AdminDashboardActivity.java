@@ -122,7 +122,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         cardContent.setOnClickListener(v -> {
-            Toast.makeText(this, "Content Management - Coming Soon", Toast.LENGTH_SHORT).show();
+            // Navigate to Content Management (M6.3)
+            Intent intent = new Intent(this, AdminCourseListActivity.class);
+            startActivity(intent);
         });
 
         cardCommunity.setOnClickListener(v -> {

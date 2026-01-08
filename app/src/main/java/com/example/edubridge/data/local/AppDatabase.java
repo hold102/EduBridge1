@@ -19,11 +19,11 @@ import com.example.edubridge.data.local.entity.PlannerTask;
  * Utilizes the Singleton pattern to ensure a single database instance
  * lifecycle.
  * <p>
- * Version 8: Added LocalCommunityPost entity for offline community posts.
+ * Version 10: Added userId to PlannerTask for user-scoped tasks.
  * </p>
  */
 @Database(entities = { Course.class, Notification.class, ChatMessage.class,
-        PlannerTask.class, LocalCommunityPost.class }, version = 8, exportSchema = false)
+        PlannerTask.class, LocalCommunityPost.class }, version = 10, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract CourseDao courseDao();

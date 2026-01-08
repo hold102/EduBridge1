@@ -18,6 +18,12 @@ public interface CourseDao {
     @Query("SELECT * FROM courses")
     LiveData<List<Course>> getAllCourses();
 
+    @Query("SELECT * FROM courses")
+    List<Course> getAllCoursesSync();
+
+    @Query("SELECT * FROM courses WHERE courseId = :courseId LIMIT 1")
+    Course getCourseByIdSync(String courseId);
+
     @Query("DELETE FROM courses")
     void deleteAll();
 }

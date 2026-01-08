@@ -143,6 +143,9 @@ public class DashboardActivity extends AppCompatActivity {
         // DEBUG: Seed dummy notifications for verification
         seedDummyNotifications();
 
+        // Seed dummy courses for local database
+        seedDummyCourses();
+
         setupCard(R.id.card_badges, BadgesActivity.class);
 
         // M2.4 Achievement Summary
@@ -248,8 +251,8 @@ public class DashboardActivity extends AppCompatActivity {
                     userLearningGoal = goal;
 
                     // Refresh recommendations if goal matches changed
-                    if (goalChanged && cachedCourses != null) {
-                        updateRecommendationUI(cachedCourses);
+                    if (goalChanged) {
+                        refreshRecommendations();
                     }
 
                     // 4. Achievement Summary (M2.4)
@@ -343,8 +346,9 @@ public class DashboardActivity extends AppCompatActivity {
 
     /**
      * Initializes the Progress Dashboard submodule (M2.1).
-     * Sets up the RecyclerView for course progress and observes the Room database
-     * for real-time updates on course data.
+     * Now loads from user's Firestore enrollments and shows only in-progress
+     * courses.
+     * Courses are clickable to navigate to CourseDetail.
      */
     private void setupProgressDashboard() {
         rvCourseProgress = findViewById(R.id.rv_course_progress);
@@ -353,40 +357,66 @@ public class DashboardActivity extends AppCompatActivity {
 
         if (rvCourseProgress != null) {
             rvCourseProgress.setLayoutManager(new LinearLayoutManager(this));
-            courseAdapter = new CourseProgressAdapter();
+            courseAdapter = new CourseProgressAdapter(this::openCourseDetails);
             rvCourseProgress.setAdapter(courseAdapter);
-
-            // Enable nested scrolling so the box scrolls internally
             rvCourseProgress.setNestedScrollingEnabled(true);
         }
 
-        // Observe Data
-        AppDatabase.getInstance(this).courseDao().getAllCourses().observe(this, courses -> {
-            boolean needsSeed = (courses == null || courses.isEmpty());
-            boolean missingCategory = false;
+        // Load enrolled courses from Firestore with real-time updates
+        loadEnrolledCoursesProgress();
+    }
 
-            // Check if we need to upgrade data (i.e. if category field is missing)
-            if (courses != null) {
-                for (Course c : courses) {
-                    if (c.category == null) {
-                        missingCategory = true;
-                        break;
+    private ListenerRegistration progressListener;
+
+    private void loadEnrolledCoursesProgress() {
+        if (currentUid == null) {
+            updateProgressUI(new ArrayList<>());
+            return;
+        }
+
+        // Listen to user's enrollments for real-time progress updates
+        progressListener = db.collection("users").document(currentUid)
+                .collection("enrollments")
+                .addSnapshotListener((snapshots, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Error loading enrollment progress", error);
+                        return;
                     }
-                }
-            }
 
-            // Only seed if empty or we found courses with missing categories
-            if (needsSeed || missingCategory) {
-                seedDummyCourses();
-            } else {
-                updateProgressUI(courses);
-            }
-        });
+                    List<Course> inProgressCourses = new ArrayList<>();
+
+                    if (snapshots != null) {
+                        for (com.google.firebase.firestore.QueryDocumentSnapshot doc : snapshots) {
+                            String status = doc.getString("status");
+
+                            // Only include courses that are enrolled or in_progress (not completed)
+                            if (status != null && !status.equals("completed")) {
+                                Course course = new Course();
+                                course.courseId = doc.getId();
+                                course.title = doc.getString("courseTitle");
+                                course.category = doc.getString("category");
+
+                                Long progress = doc.getLong("progress");
+                                Long total = doc.getLong("totalLessons");
+
+                                course.progress = progress != null ? progress.intValue() : 0;
+                                course.totalLessons = total != null ? total.intValue() : 10;
+                                course.status = course.progress > 0 ? "In Progress" : "Enrolled";
+
+                                inProgressCourses.add(course);
+                            }
+                        }
+                    }
+
+                    updateProgressUI(inProgressCourses);
+                });
     }
 
     // Recommendation UI Fields
     private RecyclerView rvRecommendations;
     private RecommendationAdapter recommendationAdapter;
+    private List<Course> recommendationCourses = new ArrayList<>();
+    private ListenerRegistration enrollmentListener;
 
     private void setupRecommendationEngine() {
         rvRecommendations = findViewById(R.id.rv_recommendations);
@@ -395,40 +425,131 @@ public class DashboardActivity extends AppCompatActivity {
             recommendationAdapter = new RecommendationAdapter(this::openCourseDetails);
             rvRecommendations.setAdapter(recommendationAdapter);
         }
+
+        // Load all available courses for recommendations
+        loadRecommendationCourses();
+
+        // Listen for enrollment changes to update recommendations in real-time
+        if (currentUid != null) {
+            enrollmentListener = db.collection("users").document(currentUid)
+                    .collection("enrollments")
+                    .addSnapshotListener((snapshots, error) -> {
+                        if (error != null)
+                            return;
+                        // Refresh recommendations when enrollments change
+                        refreshRecommendations();
+                    });
+        }
+    }
+
+    private void loadRecommendationCourses() {
+        recommendationCourses.clear();
+
+        // Same 12 sample courses as ContentLibrary
+        recommendationCourses.add(createRecommendationCourse("math1", "Basic Algebra",
+                "Learn fundamental algebraic concepts", "Mathematics", "Beginner", "2 hours", 8));
+        recommendationCourses.add(createRecommendationCourse("math2", "Calculus 101",
+                "Introduction to derivatives and integrals", "Mathematics", "Intermediate", "4 hours", 12));
+        recommendationCourses.add(createRecommendationCourse("math3", "Advanced Statistics",
+                "Statistical analysis and probability", "Mathematics", "Advanced", "6 hours", 15));
+
+        recommendationCourses.add(createRecommendationCourse("sci1", "Intro to Physics",
+                "Newton's laws, motion, and forces", "Science", "Beginner", "3 hours", 10));
+        recommendationCourses.add(createRecommendationCourse("sci2", "Organic Chemistry",
+                "Carbon compounds and structures", "Science", "Advanced", "5 hours", 14));
+        recommendationCourses.add(createRecommendationCourse("sci3", "Biology Fundamentals",
+                "Cell structure and genetics", "Science", "Beginner", "3 hours", 9));
+
+        recommendationCourses.add(createRecommendationCourse("code1", "Java Fundamentals",
+                "Object-oriented programming", "Coding", "Beginner", "4 hours", 12));
+        recommendationCourses.add(createRecommendationCourse("code2", "Web Development",
+                "HTML, CSS, and JavaScript", "Coding", "Intermediate", "5 hours", 15));
+        recommendationCourses.add(createRecommendationCourse("code3", "Python for Data Science",
+                "Data analysis and ML", "Coding", "Advanced", "8 hours", 20));
+
+        recommendationCourses.add(createRecommendationCourse("art1", "Drawing Basics",
+                "Sketching and shading", "Art", "Beginner", "2 hours", 6));
+        recommendationCourses.add(createRecommendationCourse("art2", "Digital Illustration",
+                "Create art with digital tools", "Art", "Intermediate", "4 hours", 10));
+
+        recommendationCourses.add(createRecommendationCourse("geo1", "World Geography",
+                "Countries, capitals, and cultures", "Geography", "Beginner", "2 hours", 8));
+
+        refreshRecommendations();
+    }
+
+    private Course createRecommendationCourse(String id, String title, String desc,
+            String category, String difficulty,
+            String duration, int lessons) {
+        Course c = new Course();
+        c.courseId = id;
+        c.title = title;
+        c.description = desc;
+        c.category = category;
+        c.difficulty = difficulty;
+        c.duration = duration;
+        c.totalLessons = lessons;
+        c.status = "Not Started";
+        c.isPublished = true;
+        return c;
+    }
+
+    private void refreshRecommendations() {
+        if (currentUid == null || recommendationCourses.isEmpty()) {
+            applyRecommendationSorting(new ArrayList<>(recommendationCourses));
+            return;
+        }
+
+        // Fetch enrolled course IDs and filter
+        db.collection("users").document(currentUid)
+                .collection("enrollments")
+                .get()
+                .addOnSuccessListener(snapshots -> {
+                    List<String> enrolledIds = new ArrayList<>();
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : snapshots) {
+                        enrolledIds.add(doc.getId());
+                    }
+
+                    // Filter out enrolled courses
+                    List<Course> filtered = new ArrayList<>();
+                    for (Course c : recommendationCourses) {
+                        if (!enrolledIds.contains(c.courseId)) {
+                            filtered.add(c);
+                        }
+                    }
+
+                    applyRecommendationSorting(filtered);
+                })
+                .addOnFailureListener(e -> {
+                    applyRecommendationSorting(new ArrayList<>(recommendationCourses));
+                });
     }
 
     private void openCourseDetails(Course course) {
         Intent intent = new Intent(DashboardActivity.this, CourseDetailActivity.class);
+        intent.putExtra("EXTRA_COURSE_ID", course.courseId);
         intent.putExtra("EXTRA_TITLE", course.title);
         intent.putExtra("EXTRA_DESC", course.description);
-        // Simple icon mapping or default
-        int iconResId = R.drawable.ic_nav_library; // Default
-        if (course.title.contains("Math"))
-            iconResId = R.drawable.ic_subject_math;
-        else if (course.title.contains("Science"))
-            iconResId = R.drawable.ic_subject_science;
-        else if (course.title.contains("Computer"))
-            iconResId = R.drawable.ic_subject_coding;
-        else if (course.title.contains("Art"))
-            iconResId = R.drawable.ic_subject_art;
-        else if (course.title.contains("Geography"))
-            iconResId = R.drawable.ic_subject_geo;
-
-        intent.putExtra("EXTRA_ICON", iconResId);
+        intent.putExtra("EXTRA_CATEGORY", course.category);
+        intent.putExtra("EXTRA_DIFFICULTY", course.difficulty);
+        intent.putExtra("EXTRA_DURATION", course.duration);
+        intent.putExtra("EXTRA_LESSONS", course.totalLessons);
         startActivity(intent);
     }
 
-    private void updateRecommendationUI(List<Course> courses) {
-        if (courses == null || courses.isEmpty())
+    private void applyRecommendationSorting(List<Course> courses) {
+        if (courses.isEmpty()) {
+            if (recommendationAdapter != null) {
+                recommendationAdapter.setRecommendations(courses);
+            }
             return;
-
-        List<Course> sortedList = new ArrayList<>(courses);
+        }
 
         // Sorting Logic:
         // 1. Goal Match: Matches userLearningGoal (Yes > No)
         // 2. Status: Not Started (1) -> In Progress (2) -> Completed (3)
         // 3. Difficulty: Beginner (1) -> Intermediate (2) -> Advanced (3)
-        sortedList.sort((c1, c2) -> {
+        courses.sort((c1, c2) -> {
             // Priority 0: Goal Match
             boolean m1 = isGoalMatch(c1);
             boolean m2 = isGoalMatch(c2);
@@ -449,8 +570,11 @@ public class DashboardActivity extends AppCompatActivity {
             return Integer.compare(d1, d2);
         });
 
+        // Limit to 5 recommendations
+        List<Course> limited = courses.size() > 5 ? courses.subList(0, 5) : courses;
+
         if (recommendationAdapter != null) {
-            recommendationAdapter.setRecommendations(sortedList);
+            recommendationAdapter.setRecommendations(limited);
         }
     }
 
@@ -516,8 +640,8 @@ public class DashboardActivity extends AppCompatActivity {
             courseAdapter.setCourses(courses);
         }
 
-        // M2.2 Update Recommendation
-        updateRecommendationUI(courses);
+        // Note: Recommendations are now handled separately in
+        // setupRecommendationEngine()
 
         int totalPercent = 0;
         int count = 0;
@@ -596,73 +720,73 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void seedDummyCourses() {
         new Thread(() -> {
-            // Synced with ContentLibraryActivity
-            Course c1 = new Course();
-            c1.courseId = "c1";
-            c1.title = "Mathematics 101";
-            c1.description = "Basic Algebra and Geometry";
-            c1.category = "Math";
-            c1.progress = 0;
-            c1.totalLessons = 10;
-            c1.status = "Not Started";
-            c1.difficulty = "Beginner";
-            c1.duration = "2 Weeks";
+            // Synced with ContentLibraryActivity sample courses
+            List<Course> courses = new ArrayList<>();
 
-            Course c2 = new Course();
-            c2.courseId = "c2";
-            c2.title = "Science Basics";
-            c2.description = "Introduction to Physics and Chemistry";
-            c2.category = "Science";
-            c2.progress = 3;
-            c2.totalLessons = 12;
-            c2.status = "In Progress";
-            c2.difficulty = "Intermediate";
-            c2.duration = "4 Weeks";
+            // Mathematics
+            courses.add(createCourse("math1", "Basic Algebra",
+                    "Learn fundamental algebraic concepts and equations",
+                    "Mathematics", "Beginner", "2 hours", 8, 0, "Not Started"));
+            courses.add(createCourse("math2", "Calculus 101",
+                    "Introduction to derivatives and integrals",
+                    "Mathematics", "Intermediate", "4 hours", 12, 3, "In Progress"));
+            courses.add(createCourse("math3", "Advanced Statistics",
+                    "Statistical analysis and probability theory",
+                    "Mathematics", "Advanced", "6 hours", 15, 0, "Not Started"));
 
-            Course c3 = new Course();
-            c3.courseId = "c3";
-            c3.title = "Computer Science";
-            c3.description = "Java Programming for Beginners";
-            c3.category = "Coding";
-            c3.progress = 0;
-            c3.totalLessons = 20;
-            c3.status = "Not Started";
-            c3.difficulty = "Advanced";
-            c3.duration = "8 Weeks";
+            // Science
+            courses.add(createCourse("sci1", "Intro to Physics",
+                    "Newton's laws, motion, and forces explained",
+                    "Science", "Beginner", "3 hours", 10, 5, "In Progress"));
+            courses.add(createCourse("sci2", "Organic Chemistry",
+                    "Carbon compounds and molecular structures",
+                    "Science", "Advanced", "5 hours", 14, 0, "Not Started"));
 
-            Course c4 = new Course();
-            c4.courseId = "c4";
-            c4.title = "Art & Design";
-            c4.description = "Digital Art Fundamentals";
-            c4.category = "Arts";
-            c4.progress = 10;
-            c4.totalLessons = 10;
-            c4.status = "Completed";
-            c4.difficulty = "Beginner";
-            c4.duration = "1 Week";
+            // Coding
+            courses.add(createCourse("code1", "Java Fundamentals",
+                    "Object-oriented programming with Java",
+                    "Coding", "Beginner", "4 hours", 12, 0, "Not Started"));
+            courses.add(createCourse("code2", "Web Development",
+                    "HTML, CSS, and JavaScript basics",
+                    "Coding", "Intermediate", "5 hours", 15, 8, "In Progress"));
+            courses.add(createCourse("code3", "Python for Data Science",
+                    "Data analysis and machine learning",
+                    "Coding", "Advanced", "8 hours", 20, 0, "Not Started"));
 
-            Course c5 = new Course();
-            c5.courseId = "c5";
-            c5.title = "World Geography";
-            c5.description = "Explore the Continents";
-            c5.category = "Humanities";
-            c5.progress = 5;
-            c5.totalLessons = 15;
-            c5.status = "In Progress";
-            c5.difficulty = "Intermediate";
-            c5.duration = "3 Weeks";
+            // Art
+            courses.add(createCourse("art1", "Drawing Basics",
+                    "Sketching, shading, and perspective",
+                    "Art", "Beginner", "2 hours", 6, 6, "Completed"));
+
+            // Geography
+            courses.add(createCourse("geo1", "World Geography",
+                    "Countries, capitals, and cultures",
+                    "Geography", "Beginner", "2 hours", 8, 4, "In Progress"));
 
             AppDatabase db = AppDatabase.getInstance(getApplicationContext());
-
-            // Clear old data to ensure sync with Content Library
             db.courseDao().deleteAll();
-
-            db.courseDao().insert(c1);
-            db.courseDao().insert(c2);
-            db.courseDao().insert(c3);
-            db.courseDao().insert(c4);
-            db.courseDao().insert(c5);
+            for (Course c : courses) {
+                db.courseDao().insert(c);
+            }
         }).start();
+    }
+
+    private Course createCourse(String id, String title, String desc,
+            String category, String difficulty,
+            String duration, int totalLessons,
+            int progress, String status) {
+        Course c = new Course();
+        c.courseId = id;
+        c.title = title;
+        c.description = desc;
+        c.category = category;
+        c.difficulty = difficulty;
+        c.duration = duration;
+        c.totalLessons = totalLessons;
+        c.progress = progress;
+        c.status = status;
+        c.isPublished = true;
+        return c;
     }
 
     private void seedDummyNotifications() {

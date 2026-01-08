@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -19,19 +20,20 @@ import okhttp3.Response;
 
 /**
  * Utility class for interacting with Google Gemini AI via REST API.
- * Uses OkHttp (bundled with Retrofit) for HTTP requests.
+ * Uses OkHttp for HTTP requests (compatible with Android).
  */
 public class GeminiHelper {
 
     private static final String TAG = "GeminiHelper";
 
-    // API Key - Replace with your own from https://makersuite.google.com/app/apikey
-    private static final String API_KEY = "AIzaSyD_0ffzW9n6Mow-yBNW3lYTOeeYkO_mtGI";
+    // API Key from user
+    private static final String API_KEY = "AIzaSyDJBYkxABSFmhtK7ruPRqIAvo1BBXCIEHA";
 
-    // Use gemini-2.0-flash (latest stable)
+    // Use gemini-2.5-flash as requested
     private static final String MODEL_NAME = "gemini-2.5-flash";
 
-    private static final String API_URL = "https://generativelanguage.googleapis.com/v1/models/" + MODEL_NAME
+    // v1beta endpoint for Gemini 2.5 models
+    private static final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL_NAME
             + ":generateContent?key=" + API_KEY;
 
     private static final String SYSTEM_PROMPT = "You are Learning Buddy, a friendly and helpful AI tutor for students. "
@@ -40,7 +42,11 @@ public class GeminiHelper {
             "Keep responses concise and suitable for students. " +
             "Be encouraging and supportive.";
 
-    private static final OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build();
     private static final Executor executor = Executors.newSingleThreadExecutor();
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
@@ -55,7 +61,7 @@ public class GeminiHelper {
 
     /**
      * Generate a response from Gemini AI.
-     * 
+     *
      * @param userMessage The user's message/question
      * @param callback    Callback for success/error
      */
@@ -84,6 +90,8 @@ public class GeminiHelper {
                         .post(body)
                         .build();
 
+                Log.d(TAG, "Sending request to: " + API_URL);
+
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -93,15 +101,15 @@ public class GeminiHelper {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
+                        String responseBody = response.body() != null ? response.body().string() : "";
+
                         if (!response.isSuccessful()) {
-                            String errorBody = response.body() != null ? response.body().string() : "Unknown error";
-                            Log.e(TAG, "API error: " + response.code() + " - " + errorBody);
+                            Log.e(TAG, "API error: " + response.code() + " - " + responseBody);
                             callback.onError("API error: " + response.code());
                             return;
                         }
 
                         try {
-                            String responseBody = response.body().string();
                             JSONObject json = new JSONObject(responseBody);
 
                             // Extract the generated text
@@ -114,6 +122,7 @@ public class GeminiHelper {
                                     if (partsArr != null && partsArr.length() > 0) {
                                         String text = partsArr.getJSONObject(0).optString("text", "");
                                         if (!text.isEmpty()) {
+                                            Log.d(TAG, "✅ AI response received successfully");
                                             callback.onSuccess(text.trim());
                                             return;
                                         }

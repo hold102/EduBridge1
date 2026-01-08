@@ -15,6 +15,13 @@ public class PlannerTask {
     public String id;
 
     /**
+     * Owner's user ID (Firebase UID).
+     * Tasks are filtered by this to isolate per-user data.
+     */
+    @NonNull
+    public String userId;
+
+    /**
      * Task title/description.
      */
     public String title;
@@ -37,10 +44,13 @@ public class PlannerTask {
 
     public PlannerTask() {
         this.id = "";
+        this.userId = "";
     }
 
-    public PlannerTask(@NonNull String id, String title, long dueDate, boolean isCompleted, long createdAt) {
+    public PlannerTask(@NonNull String id, @NonNull String userId, String title, long dueDate, boolean isCompleted,
+            long createdAt) {
         this.id = id;
+        this.userId = userId;
         this.title = title;
         this.dueDate = dueDate;
         this.isCompleted = isCompleted;

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ON：黑色轨道 -->
+    <item android:state_checked="true" android:color="@color/brand_black" />
+    <!-- OFF：浅灰轨道（你可改成更白：#F2F2F2） -->
+    <item android:color="#E0E0E0" />
+</selector>

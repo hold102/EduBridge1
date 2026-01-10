@@ -12,6 +12,7 @@
         android:padding="24dp"
         android:gravity="center_vertical"
         android:background="@color/brand_black">
+
         <ImageView
             android:id="@+id/btn_back"
             android:layout_width="24dp"
@@ -19,6 +20,7 @@
             android:src="@android:drawable/ic_menu_revert"
             app:tint="@color/brand_white"
             android:background="?attr/selectableItemBackgroundBorderless"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -241,6 +243,7 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -248,11 +251,14 @@
                             android:text="Course Updates"
                             android:textSize="14sp"
                             android:textColor="@color/text_primary"/>
+
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switch_course_updates"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:checked="true"/>
+                            android:checked="true"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:trackTint="@color/switch_track_selector"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -261,6 +267,7 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -268,11 +275,14 @@
                             android:text="Lesson Reminders"
                             android:textSize="14sp"
                             android:textColor="@color/text_primary"/>
+
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switch_reminders"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:checked="true"/>
+                            android:checked="true"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:trackTint="@color/switch_track_selector"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -281,6 +291,7 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="12dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -288,11 +299,14 @@
                             android:text="Achievement Unlocks"
                             android:textSize="14sp"
                             android:textColor="@color/text_primary"/>
+
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switch_achievements"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:checked="true"/>
+                            android:checked="true"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:trackTint="@color/switch_track_selector"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -300,6 +314,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -307,11 +322,14 @@
                             android:text="System Announcements"
                             android:textSize="14sp"
                             android:textColor="@color/text_primary"/>
+
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switch_announcements"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:checked="true"/>
+                            android:checked="true"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:trackTint="@color/switch_track_selector"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -353,12 +371,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Text-to-Speech"
                             android:textSize="16sp"
                             android:textColor="@color/text_primary"/>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -370,7 +390,9 @@
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switch_tts"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        app:thumbTint="@color/switch_thumb_selector"
+                        app:trackTint="@color/switch_track_selector"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -432,11 +454,13 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:padding="16dp">
+
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_settings_coffee"
                             android:layout_marginEnd="16dp"/>
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -512,7 +536,6 @@
                 android:textSize="16sp"
                 app:backgroundTint="@color/brand_black"
                 app:cornerRadius="30dp"/>
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

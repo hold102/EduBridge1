@@ -13,13 +13,15 @@
         android:padding="16dp"
         android:gravity="center_vertical"
         android:background="@color/bg_main">
+
         <ImageView
             android:id="@+id/btn_back"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="@color/brand_black"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,12 +29,13 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/brand_black"
-            android:layout_marginStart="12dp"/>
+            android:layout_marginStart="12dp" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,20 +50,23 @@
                 app:cardElevation="2dp"
                 app:cardBackgroundColor="@color/bg_card"
                 android:layout_marginBottom="16dp">
-                
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- Thumbnail -->
+                    <!-- Thumbnail (FIXED) -->
                     <ImageView
                         android:id="@+id/img_thumbnail"
                         android:layout_width="match_parent"
-                        android:layout_height="160dp"
-                        android:scaleType="centerCrop"
+                        android:layout_height="200dp"
+                        android:padding="14dp"
+                        android:background="#E8E8E8"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/ic_nav_library"
-                        android:background="#E8E8E8"/>
+                        android:clipToPadding="false" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -84,7 +90,7 @@
                                 android:paddingVertical="4dp"
                                 android:text="Mathematics"
                                 android:textColor="@color/brand_black"
-                                android:textSize="11sp"/>
+                                android:textSize="11sp" />
 
                             <TextView
                                 android:id="@+id/tv_difficulty"
@@ -96,7 +102,7 @@
                                 android:paddingVertical="4dp"
                                 android:text="Beginner"
                                 android:textColor="@android:color/white"
-                                android:textSize="11sp"/>
+                                android:textSize="11sp" />
                         </LinearLayout>
 
                         <!-- Title -->
@@ -107,7 +113,7 @@
                             android:text="Course Title"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:textColor="@color/brand_black"/>
+                            android:textColor="@color/brand_black" />
 
                         <!-- Description -->
                         <TextView
@@ -117,9 +123,9 @@
                             android:layout_marginTop="8dp"
                             android:text="Course description..."
                             android:textSize="14sp"
-                            android:textColor="@color/text_secondary"/>
+                            android:textColor="@color/text_secondary" />
 
-                        <!-- M3.2.3 Meta Info Row -->
+                        <!-- Meta Info Row -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -132,12 +138,14 @@
                                 android:layout_weight="1"
                                 android:orientation="vertical"
                                 android:gravity="center">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Duration"
                                     android:textSize="11sp"
-                                    android:textColor="@color/text_hint"/>
+                                    android:textColor="@color/text_hint" />
+
                                 <TextView
                                     android:id="@+id/tv_duration"
                                     android:layout_width="wrap_content"
@@ -145,13 +153,13 @@
                                     android:text="4 hours"
                                     android:textSize="14sp"
                                     android:textStyle="bold"
-                                    android:textColor="@color/brand_black"/>
+                                    android:textColor="@color/brand_black" />
                             </LinearLayout>
 
                             <View
                                 android:layout_width="1dp"
                                 android:layout_height="match_parent"
-                                android:background="@color/stroke_color"/>
+                                android:background="@color/stroke_color" />
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -159,12 +167,14 @@
                                 android:layout_weight="1"
                                 android:orientation="vertical"
                                 android:gravity="center">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Lessons"
                                     android:textSize="11sp"
-                                    android:textColor="@color/text_hint"/>
+                                    android:textColor="@color/text_hint" />
+
                                 <TextView
                                     android:id="@+id/tv_lessons"
                                     android:layout_width="wrap_content"
@@ -172,13 +182,13 @@
                                     android:text="12"
                                     android:textSize="14sp"
                                     android:textStyle="bold"
-                                    android:textColor="@color/brand_black"/>
+                                    android:textColor="@color/brand_black" />
                             </LinearLayout>
 
                             <View
                                 android:layout_width="1dp"
                                 android:layout_height="match_parent"
-                                android:background="@color/stroke_color"/>
+                                android:background="@color/stroke_color" />
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -186,12 +196,14 @@
                                 android:layout_weight="1"
                                 android:orientation="vertical"
                                 android:gravity="center">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Effort"
                                     android:textSize="11sp"
-                                    android:textColor="@color/text_hint"/>
+                                    android:textColor="@color/text_hint" />
+
                                 <TextView
                                     android:id="@+id/tv_effort"
                                     android:layout_width="wrap_content"
@@ -199,14 +211,15 @@
                                     android:text="2-3 hrs/wk"
                                     android:textSize="14sp"
                                     android:textStyle="bold"
-                                    android:textColor="@color/brand_black"/>
+                                    android:textColor="@color/brand_black" />
                             </LinearLayout>
                         </LinearLayout>
+
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- M3.2.5 Enrollment Status Card -->
+            <!-- Enrollment Status Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_enrollment"
                 android:layout_width="match_parent"
@@ -320,7 +333,7 @@
                         android:layout_height="wrap_content"
                         android:text="Start your learning journey"
                         android:textSize="14sp"
-                        android:textColor="@color/text_secondary"/>
+                        android:textColor="@color/text_secondary" />
 
                     <!-- Enroll (Black Button) -->
                     <com.google.android.material.button.MaterialButton
@@ -331,7 +344,7 @@
                         android:text="Enroll Now"
                         android:textColor="@android:color/white"
                         app:backgroundTint="@color/brand_black"
-                        app:cornerRadius="8dp"/>
+                        app:cornerRadius="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -344,7 +357,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/brand_black"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -367,7 +380,7 @@
                         android:layout_height="48dp"
                         android:src="@drawable/ic_nav_community"
                         android:background="@drawable/bg_category_chip"
-                        android:padding="8dp"/>
+                        android:padding="8dp" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -383,7 +396,7 @@
                             android:text="Dr. John Smith"
                             android:textSize="14sp"
                             android:textStyle="bold"
-                            android:textColor="@color/brand_black"/>
+                            android:textColor="@color/brand_black" />
 
                         <TextView
                             android:id="@+id/tv_instructor_bio"
@@ -393,12 +406,12 @@
                             android:textSize="12sp"
                             android:textColor="@color/text_secondary"
                             android:maxLines="2"
-                            android:ellipsize="end"/>
+                            android:ellipsize="end" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- M3.2.1 Learning Objectives -->
+            <!-- Objectives -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -406,7 +419,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/brand_black"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -424,10 +437,10 @@
                     android:text="• Master fundamental concepts\n• Apply knowledge to real problems\n• Build practical skills"
                     android:textSize="14sp"
                     android:textColor="@color/text_primary"
-                    android:lineSpacingExtra="4dp"/>
+                    android:lineSpacingExtra="4dp" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- M3.2.4 Prerequisites -->
+            <!-- Prerequisites -->
             <TextView
                 android:id="@+id/tv_prereq_label"
                 android:layout_width="wrap_content"
@@ -436,7 +449,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/brand_black"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_prerequisites"
@@ -454,10 +467,10 @@
                     android:padding="14dp"
                     android:text="Basic math knowledge recommended"
                     android:textSize="14sp"
-                    android:textColor="#E65100"/>
+                    android:textColor="#E65100" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- M3.2.1 Syllabus -->
+            <!-- Syllabus -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -465,13 +478,13 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/brand_black"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_syllabus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
+                android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
     </ScrollView>

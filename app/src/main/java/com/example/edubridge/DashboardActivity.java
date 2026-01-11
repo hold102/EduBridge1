@@ -2,12 +2,12 @@ package com.example.edubridge;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +39,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DashboardActivity
+ * - Progress Dashboard (M2.1)
+ * - Course Recommendation (M2.2)
+ * - Notification Token Sync (M2.3)
+ * - Achievement Summary (M2.4)
+ * - Level Progression (M4.2)
+ *
+ * Fix: "My Courses" click now works (expand/collapse + render clickable list)
+ */
 public class DashboardActivity extends AppCompatActivity {
 
     private static final String TAG = "DashboardActivity";
@@ -68,6 +78,21 @@ public class DashboardActivity extends AppCompatActivity {
     private TextView tvBadgeCount;
     private LinearLayout layoutRecentBadges;
 
+    // My Courses Section (Bottom)
+    private TextView tvMyCoursesTitle;
+    private LinearLayout layoutEnrolledCourses;
+    private boolean isMyCoursesExpanded = true;
+
+    private ListenerRegistration progressListener;
+
+    private String userLearningGoal;
+    private List<Course> cachedCourses;
+
+    private RecyclerView rvRecommendations;
+    private RecommendationAdapter recommendationAdapter;
+    private final List<Course> recommendationCourses = new ArrayList<>();
+    private ListenerRegistration enrollmentListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,23 +120,27 @@ public class DashboardActivity extends AppCompatActivity {
         currentUid = currentUser.getUid();
         setContentView(R.layout.activity_dashboard);
 
-        // Offline Check (Integrated from your local version)
+        // Offline Check
         if (!SyncManager.isOnline(this)) {
             Toast.makeText(this, "Offline mode: using cached data", Toast.LENGTH_SHORT).show();
         }
+
+        // Bind UI
+        tvUsername = findViewById(R.id.tv_username);
+        tvPoints = findViewById(R.id.tv_points);
+
+        // My Courses UI
+        layoutEnrolledCourses = findViewById(R.id.layout_enrolled_courses);
+        setupMyCoursesClick(); // ✅ Fix: make "My Courses" respond
+
+        // Username
+        setUsernameFromAuth(currentUser);
 
         // M2.1 Progress Dashboard
         setupProgressDashboard();
 
         // M2.2 Course Recommendation
         setupRecommendationEngine();
-
-        // Bind UI
-        tvUsername = findViewById(R.id.tv_username);
-        tvPoints = findViewById(R.id.tv_points);
-
-        // Username
-        setUsernameFromAuth(currentUser);
 
         // Points & Goal Realtime Listener
         listenUserData(currentUid);
@@ -133,7 +162,9 @@ public class DashboardActivity extends AppCompatActivity {
         // Notification Bell
         View btnNotif = findViewById(R.id.btn_notification);
         if (btnNotif != null) {
-            btnNotif.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, NotificationsActivity.class)));
+            btnNotif.setOnClickListener(v ->
+                    startActivity(new Intent(DashboardActivity.this, NotificationsActivity.class))
+            );
         }
 
         // Seed dummy data
@@ -147,35 +178,85 @@ public class DashboardActivity extends AppCompatActivity {
         tvAchievementXp = findViewById(R.id.tv_achievement_xp);
         tvBadgeCount = findViewById(R.id.tv_badge_count);
         layoutRecentBadges = findViewById(R.id.layout_recent_badges);
+
         View btnViewBadges = findViewById(R.id.btn_view_all_badges);
         if (btnViewBadges != null) {
-            btnViewBadges.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, BadgesActivity.class)));
+            btnViewBadges.setOnClickListener(v ->
+                    startActivity(new Intent(DashboardActivity.this, BadgesActivity.class))
+            );
         }
 
         // Points Card -> Leaderboard
         MaterialCardView pointsCard = findViewById(R.id.card_points);
         if (pointsCard != null) {
-            pointsCard.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, LeaderboardActivity.class)));
+            pointsCard.setOnClickListener(v ->
+                    startActivity(new Intent(DashboardActivity.this, LeaderboardActivity.class))
+            );
         } else if (tvPoints != null) {
-            tvPoints.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, LeaderboardActivity.class)));
+            tvPoints.setOnClickListener(v ->
+                    startActivity(new Intent(DashboardActivity.this, LeaderboardActivity.class))
+            );
         }
 
         // Daily Check-In
         View streakLayout = findViewById(R.id.layout_streak);
         if (streakLayout != null) {
-            streakLayout.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, DailyCheckInActivity.class)));
+            streakLayout.setOnClickListener(v ->
+                    startActivity(new Intent(DashboardActivity.this, DailyCheckInActivity.class))
+            );
         }
 
-        // Home/Logout Button
+        // Home Button
         View btnHome = findViewById(R.id.btn_home);
         if (btnHome != null) {
-            btnHome.setOnClickListener(v -> {
-                //auth.signOut();
-                //Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                //startActivity(intent);
-                //finish();
-                Toast.makeText(DashboardActivity.this, "Welcome back！", Toast.LENGTH_SHORT).show();
+            btnHome.setOnClickListener(v ->
+                    Toast.makeText(DashboardActivity.this, "Welcome back!", Toast.LENGTH_SHORT).show()
+            );
+        }
+    }
+
+    /**
+     * ✅ Make "My Courses" clickable and show the course list below.
+     *
+     * Since your XML does not give the "My Courses" TextView an id,
+     * we cannot find it directly here.
+     *
+     * So we use a safe behavior:
+     * - If layout_enrolled_courses exists: clicking it toggles expand/collapse
+     * - Also whenever data updates, we render the list inside layout_enrolled_courses
+     *
+     * If you want click on the title TextView itself, add id in XML:
+     *   android:id="@+id/tv_my_courses_title"
+     * then uncomment findViewById below.
+     */
+    private void setupMyCoursesClick() {
+        // Optional: if you add id in XML, enable this:
+        // tvMyCoursesTitle = findViewById(R.id.tv_my_courses_title);
+
+        View clickTarget = null;
+
+        // Prefer clicking title if it exists
+        if (tvMyCoursesTitle != null) {
+            clickTarget = tvMyCoursesTitle;
+        } else if (layoutEnrolledCourses != null) {
+            // Fallback: click on the container area
+            clickTarget = layoutEnrolledCourses;
+        }
+
+        if (clickTarget != null) {
+            clickTarget.setClickable(true);
+            clickTarget.setOnClickListener(v -> {
+                isMyCoursesExpanded = !isMyCoursesExpanded;
+                if (layoutEnrolledCourses != null) {
+                    layoutEnrolledCourses.setVisibility(isMyCoursesExpanded ? View.VISIBLE : View.GONE);
+                }
+
+                // If expanded, render immediately
+                if (isMyCoursesExpanded) {
+                    renderMyCourses(cachedCourses);
+                } else {
+                    Toast.makeText(this, "My Courses collapsed", Toast.LENGTH_SHORT).show();
+                }
             });
         }
     }
@@ -193,9 +274,6 @@ public class DashboardActivity extends AppCompatActivity {
         }
         if (tvUsername != null) tvUsername.setText(name);
     }
-
-    private String userLearningGoal;
-    private List<Course> cachedCourses;
 
     private void listenUserData(String uid) {
         if (tvPoints != null) tvPoints.setText("Points: 0");
@@ -219,9 +297,7 @@ public class DashboardActivity extends AppCompatActivity {
                     Long streakCount = snapshot.getLong("streakCount");
                     if (streakCount == null) streakCount = 0L;
                     TextView tvStreakDays = findViewById(R.id.tv_streak_days);
-                    if (tvStreakDays != null) {
-                        tvStreakDays.setText(streakCount + " Days");
-                    }
+                    if (tvStreakDays != null) tvStreakDays.setText(streakCount + " Days");
 
                     // 3. Learning Goal
                     String goal = snapshot.getString("learningGoal");
@@ -251,7 +327,9 @@ public class DashboardActivity extends AppCompatActivity {
     private void setupCard(int cardId, Class<?> destinationActivity) {
         MaterialCardView card = findViewById(cardId);
         if (card != null) {
-            card.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, destinationActivity)));
+            card.setOnClickListener(v ->
+                    startActivity(new Intent(DashboardActivity.this, destinationActivity))
+            );
         }
     }
 
@@ -259,10 +337,15 @@ public class DashboardActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(currentUid)) return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    == PackageManager.PERMISSION_GRANTED) {
                 syncFcmTokenToFirestore(currentUid);
             } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_POST_NOTIF);
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        REQ_POST_NOTIF
+                );
             }
         } else {
             syncFcmTokenToFirestore(currentUid);
@@ -274,18 +357,29 @@ public class DashboardActivity extends AppCompatActivity {
                 .addOnSuccessListener(token -> {
                     if (TextUtils.isEmpty(token)) return;
                     Log.d(TAG, "FCM Token = " + token);
-                    getSharedPreferences(SP_NAME, MODE_PRIVATE).edit().putString(KEY_FCM_TOKEN, token).apply();
+
+                    getSharedPreferences(SP_NAME, MODE_PRIVATE)
+                            .edit()
+                            .putString(KEY_FCM_TOKEN, token)
+                            .apply();
+
                     Map<String, Object> update = new HashMap<>();
                     update.put("fcmToken", token);
                     update.put("fcmUpdatedAt", FieldValue.serverTimestamp());
+
                     db.collection("users").document(uid).set(update, SetOptions.merge());
                 })
-                .addOnFailureListener(e -> Log.e(TAG, "Get token failed: " + e.getMessage()));
+                .addOnFailureListener(e ->
+                        Log.e(TAG, "Get token failed: " + e.getMessage())
+                );
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == REQ_POST_NOTIF) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Notifications enabled ✅", Toast.LENGTH_SHORT).show();
@@ -307,16 +401,18 @@ public class DashboardActivity extends AppCompatActivity {
             rvCourseProgress.setAdapter(courseAdapter);
             rvCourseProgress.setNestedScrollingEnabled(true);
         }
+
         loadEnrolledCoursesProgress();
     }
-
-    private ListenerRegistration progressListener;
 
     private void loadEnrolledCoursesProgress() {
         if (currentUid == null) {
             updateProgressUI(new ArrayList<>());
             return;
         }
+
+        if (progressListener != null) progressListener.remove();
+
         progressListener = db.collection("users").document(currentUid)
                 .collection("enrollments")
                 .addSnapshotListener((snapshots, error) -> {
@@ -324,42 +420,51 @@ public class DashboardActivity extends AppCompatActivity {
                         Log.w(TAG, "Error loading enrollment progress", error);
                         return;
                     }
+
                     List<Course> inProgressCourses = new ArrayList<>();
                     if (snapshots != null) {
                         for (com.google.firebase.firestore.QueryDocumentSnapshot doc : snapshots) {
                             String status = doc.getString("status");
-                            if (status != null && !status.equals("completed")) {
-                                Course course = new Course();
-                                course.courseId = doc.getId();
-                                course.title = doc.getString("courseTitle");
-                                course.category = doc.getString("category");
-                                Long progress = doc.getLong("progress");
-                                Long total = doc.getLong("totalLessons");
-                                course.progress = progress != null ? progress.intValue() : 0;
-                                course.totalLessons = total != null ? total.intValue() : 10;
-                                course.status = course.progress > 0 ? "In Progress" : "Enrolled";
-                                inProgressCourses.add(course);
-                            }
+                            if (status != null && status.equals("completed")) continue;
+
+                            Course course = new Course();
+                            course.courseId = doc.getId();
+                            course.title = doc.getString("courseTitle");
+                            course.category = doc.getString("category");
+
+                            Long progress = doc.getLong("progress");
+                            Long total = doc.getLong("totalLessons");
+
+                            course.progress = progress != null ? progress.intValue() : 0;
+                            course.totalLessons = total != null ? total.intValue() : 10;
+
+                            course.status = course.progress > 0 ? "In Progress" : "Enrolled";
+                            inProgressCourses.add(course);
                         }
                     }
+
                     updateProgressUI(inProgressCourses);
+
+                    // ✅ Also render My Courses section
+                    renderMyCourses(inProgressCourses);
                 });
     }
-
-    private RecyclerView rvRecommendations;
-    private RecommendationAdapter recommendationAdapter;
-    private List<Course> recommendationCourses = new ArrayList<>();
-    private ListenerRegistration enrollmentListener;
 
     private void setupRecommendationEngine() {
         rvRecommendations = findViewById(R.id.rv_recommendations);
         if (rvRecommendations != null) {
-            rvRecommendations.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            rvRecommendations.setLayoutManager(
+                    new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            );
             recommendationAdapter = new RecommendationAdapter(this::openCourseDetails);
             rvRecommendations.setAdapter(recommendationAdapter);
         }
+
         loadRecommendationCourses();
+
         if (currentUid != null) {
+            if (enrollmentListener != null) enrollmentListener.remove();
+
             enrollmentListener = db.collection("users").document(currentUid)
                     .collection("enrollments")
                     .addSnapshotListener((snapshots, error) -> {
@@ -386,7 +491,9 @@ public class DashboardActivity extends AppCompatActivity {
         refreshRecommendations();
     }
 
-    private Course createRecommendationCourse(String id, String title, String desc, String category, String difficulty, String duration, int lessons) {
+    private Course createRecommendationCourse(String id, String title, String desc,
+                                              String category, String difficulty,
+                                              String duration, int lessons) {
         Course c = new Course();
         c.courseId = id;
         c.title = title;
@@ -405,6 +512,7 @@ public class DashboardActivity extends AppCompatActivity {
             applyRecommendationSorting(new ArrayList<>(recommendationCourses));
             return;
         }
+
         db.collection("users").document(currentUid)
                 .collection("enrollments")
                 .get()
@@ -413,27 +521,16 @@ public class DashboardActivity extends AppCompatActivity {
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : snapshots) {
                         enrolledIds.add(doc.getId());
                     }
+
                     List<Course> filtered = new ArrayList<>();
                     for (Course c : recommendationCourses) {
-                        if (!enrolledIds.contains(c.courseId)) {
-                            filtered.add(c);
-                        }
+                        if (!enrolledIds.contains(c.courseId)) filtered.add(c);
                     }
                     applyRecommendationSorting(filtered);
                 })
-                .addOnFailureListener(e -> applyRecommendationSorting(new ArrayList<>(recommendationCourses)));
-    }
-
-    private void openCourseDetails(Course course) {
-        Intent intent = new Intent(DashboardActivity.this, CourseDetailActivity.class);
-        intent.putExtra("EXTRA_COURSE_ID", course.courseId);
-        intent.putExtra("EXTRA_TITLE", course.title);
-        intent.putExtra("EXTRA_DESC", course.description);
-        intent.putExtra("EXTRA_CATEGORY", course.category);
-        intent.putExtra("EXTRA_DIFFICULTY", course.difficulty);
-        intent.putExtra("EXTRA_DURATION", course.duration);
-        intent.putExtra("EXTRA_LESSONS", course.totalLessons);
-        startActivity(intent);
+                .addOnFailureListener(e ->
+                        applyRecommendationSorting(new ArrayList<>(recommendationCourses))
+                );
     }
 
     private void applyRecommendationSorting(List<Course> courses) {
@@ -441,28 +538,34 @@ public class DashboardActivity extends AppCompatActivity {
             if (recommendationAdapter != null) recommendationAdapter.setRecommendations(courses);
             return;
         }
+
         courses.sort((c1, c2) -> {
             boolean m1 = isGoalMatch(c1);
             boolean m2 = isGoalMatch(c2);
             if (m1 != m2) return m1 ? -1 : 1;
+
             int s1 = getStatusPriority(c1.status);
             int s2 = getStatusPriority(c2.status);
             if (s1 != s2) return Integer.compare(s1, s2);
+
             int d1 = getDifficultyPriority(c1.difficulty);
             int d2 = getDifficultyPriority(c2.difficulty);
             return Integer.compare(d1, d2);
         });
+
         List<Course> limited = courses.size() > 5 ? courses.subList(0, 5) : courses;
         if (recommendationAdapter != null) recommendationAdapter.setRecommendations(limited);
     }
 
     private boolean isGoalMatch(Course course) {
         if (userLearningGoal == null || userLearningGoal.isEmpty()) return false;
+
         String goal = userLearningGoal.toLowerCase().trim();
         if (course.category != null) {
             String cat = course.category.toLowerCase();
             if (cat.contains(goal) || goal.contains(cat)) return true;
         }
+
         boolean inTitle = (course.title != null && course.title.toLowerCase().contains(goal));
         boolean inDesc = (course.description != null && course.description.toLowerCase().contains(goal));
         return inTitle || inDesc;
@@ -486,20 +589,113 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void updateProgressUI(List<Course> courses) {
         cachedCourses = courses;
+
         if (courseAdapter != null) courseAdapter.setCourses(courses);
+
         int totalPercent = 0;
         int count = 0;
+
         for (Course c : courses) {
             if (c.totalLessons > 0) {
-                float fractions = (float) c.progress / c.totalLessons;
-                if (fractions > 1.0f) fractions = 1.0f;
-                totalPercent += (int) (fractions * 100);
+                float fraction = (float) c.progress / c.totalLessons;
+                if (fraction > 1f) fraction = 1f;
+                totalPercent += (int) (fraction * 100);
             }
             count++;
         }
+
         int overall = (count > 0) ? (totalPercent / count) : 0;
+
         if (tvOverallProgress != null) tvOverallProgress.setText(overall + "%");
         if (pbOverallProgress != null) pbOverallProgress.setProgress(overall);
+    }
+
+    /**
+     * ✅ Render the bottom "My Courses" list dynamically
+     */
+    private void renderMyCourses(List<Course> courses) {
+        if (!isMyCoursesExpanded) return;
+        if (layoutEnrolledCourses == null) return;
+
+        layoutEnrolledCourses.removeAllViews();
+
+        if (courses == null || courses.isEmpty()) {
+            TextView empty = new TextView(this);
+            empty.setText("No enrolled courses yet.");
+            empty.setTextSize(14);
+            empty.setPadding(dp(4), dp(8), dp(4), dp(8));
+            layoutEnrolledCourses.addView(empty);
+            return;
+        }
+
+        for (Course c : courses) {
+            MaterialCardView card = new MaterialCardView(this);
+            LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            cardLp.setMargins(0, dp(8), 0, 0);
+            card.setLayoutParams(cardLp);
+
+            card.setClickable(true);
+            card.setFocusable(true);
+            card.setCardElevation(0f);
+            card.setRadius(dp(12));
+            card.setStrokeWidth(dp(2));
+            card.setStrokeColor(getResources().getColor(R.color.brand_black));
+
+            LinearLayout wrap = new LinearLayout(this);
+            wrap.setOrientation(LinearLayout.VERTICAL);
+            wrap.setPadding(dp(14), dp(12), dp(14), dp(12));
+
+            TextView title = new TextView(this);
+            title.setText(c.title != null ? c.title : "Unknown Course");
+            title.setTextSize(16);
+            title.setTextColor(getResources().getColor(R.color.brand_black));
+            title.setTypeface(title.getTypeface(), android.graphics.Typeface.BOLD);
+
+            TextView sub = new TextView(this);
+            int total = c.totalLessons > 0 ? c.totalLessons : 10;
+            int cur = c.progress;
+            String status = !TextUtils.isEmpty(c.status) ? c.status : (cur > 0 ? "In Progress" : "Enrolled");
+            sub.setText(status + " • " + cur + "/" + total + " lessons");
+            sub.setTextSize(12);
+            sub.setTextColor(getResources().getColor(R.color.text_secondary));
+            sub.setPadding(0, dp(6), 0, dp(8));
+
+            LinearProgressIndicator bar = new LinearProgressIndicator(this);
+            bar.setMax(100);
+            int percent = total > 0 ? (int) (((float) cur / total) * 100f) : 0;
+            if (percent < 0) percent = 0;
+            if (percent > 100) percent = 100;
+            bar.setProgress(percent);
+
+            wrap.addView(title);
+            wrap.addView(sub);
+            wrap.addView(bar);
+            card.addView(wrap);
+
+            card.setOnClickListener(v -> openCourseDetails(c));
+            layoutEnrolledCourses.addView(card);
+        }
+    }
+
+    private int dp(int v) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, v, getResources().getDisplayMetrics()
+        );
+    }
+
+    private void openCourseDetails(Course course) {
+        Intent intent = new Intent(DashboardActivity.this, CourseDetailActivity.class);
+        intent.putExtra("EXTRA_COURSE_ID", course.courseId);
+        intent.putExtra("EXTRA_TITLE", course.title);
+        intent.putExtra("EXTRA_DESC", course.description);
+        intent.putExtra("EXTRA_CATEGORY", course.category);
+        intent.putExtra("EXTRA_DIFFICULTY", course.difficulty);
+        intent.putExtra("EXTRA_DURATION", course.duration);
+        intent.putExtra("EXTRA_LESSONS", course.totalLessons);
+        startActivity(intent);
     }
 
     private void syncFirestoreToLocal(String uid) {
@@ -509,6 +705,7 @@ public class DashboardActivity extends AppCompatActivity {
                         Log.w(TAG, "Listen failed.", e);
                         return;
                     }
+
                     if (snapshots != null && !snapshots.isEmpty()) {
                         new Thread(() -> {
                             List<Course> cloudCourses = new ArrayList<>();
@@ -517,10 +714,12 @@ public class DashboardActivity extends AppCompatActivity {
                                 c.courseId = doc.getId();
                                 cloudCourses.add(c);
                             }
+
                             if (!cloudCourses.isEmpty()) {
-                                AppDatabase.getInstance(getApplicationContext()).courseDao().insert(cloudCourses.get(0));
+                                AppDatabase dbLocal = AppDatabase.getInstance(getApplicationContext());
+                                dbLocal.courseDao().deleteAll();
                                 for (Course c : cloudCourses) {
-                                    AppDatabase.getInstance(getApplicationContext()).courseDao().insert(c);
+                                    dbLocal.courseDao().insert(c);
                                 }
                             }
                         }).start();
@@ -529,40 +728,34 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     public void updateCourseProgress(Course course) {
-        new Thread(() -> {
-            AppDatabase.getInstance(getApplicationContext()).courseDao().insert(course);
-        }).start();
+        new Thread(() -> AppDatabase.getInstance(getApplicationContext()).courseDao().insert(course)).start();
+
         if (!TextUtils.isEmpty(currentUid)) {
             db.collection("users").document(currentUid).collection("courses")
                     .document(course.courseId)
                     .set(course, SetOptions.merge())
-                    .addOnFailureListener(e -> Log.e(TAG, "Cloud sync failed (will retry): " + e.getMessage()));
+                    .addOnFailureListener(e ->
+                            Log.e(TAG, "Cloud sync failed (will retry): " + e.getMessage())
+                    );
         }
     }
 
     private void seedDummyCourses() {
         new Thread(() -> {
             List<Course> courses = new ArrayList<>();
-            courses.add(createCourse("math1", "Basic Algebra", "Learn fundamental algebraic concepts and equations", "Mathematics", "Beginner", "2 hours", 8, 0, "Not Started"));
+            courses.add(createCourse("math1", "Basic Algebra", "Learn fundamental algebraic concepts and equations", "Mathematics", "Beginner", "2 hours", 8, 0, "Enrolled"));
             courses.add(createCourse("math2", "Calculus 101", "Introduction to derivatives and integrals", "Mathematics", "Intermediate", "4 hours", 12, 3, "In Progress"));
-            courses.add(createCourse("math3", "Advanced Statistics", "Statistical analysis and probability theory", "Mathematics", "Advanced", "6 hours", 15, 0, "Not Started"));
             courses.add(createCourse("sci1", "Intro to Physics", "Newton's laws, motion, and forces explained", "Science", "Beginner", "3 hours", 10, 5, "In Progress"));
-            courses.add(createCourse("sci2", "Organic Chemistry", "Carbon compounds and molecular structures", "Science", "Advanced", "5 hours", 14, 0, "Not Started"));
-            courses.add(createCourse("code1", "Java Fundamentals", "Object-oriented programming with Java", "Coding", "Beginner", "4 hours", 12, 0, "Not Started"));
-            courses.add(createCourse("code2", "Web Development", "HTML, CSS, and JavaScript basics", "Coding", "Intermediate", "5 hours", 15, 8, "In Progress"));
-            courses.add(createCourse("code3", "Python for Data Science", "Data analysis and machine learning", "Coding", "Advanced", "8 hours", 20, 0, "Not Started"));
-            courses.add(createCourse("art1", "Drawing Basics", "Sketching, shading, and perspective", "Art", "Beginner", "2 hours", 6, 6, "Completed"));
-            courses.add(createCourse("geo1", "World Geography", "Countries, capitals, and cultures", "Geography", "Beginner", "2 hours", 8, 4, "In Progress"));
 
-            AppDatabase db = AppDatabase.getInstance(getApplicationContext());
-            db.courseDao().deleteAll();
-            for (Course c : courses) {
-                db.courseDao().insert(c);
-            }
+            AppDatabase dbLocal = AppDatabase.getInstance(getApplicationContext());
+            dbLocal.courseDao().deleteAll();
+            for (Course c : courses) dbLocal.courseDao().insert(c);
         }).start();
     }
 
-    private Course createCourse(String id, String title, String desc, String category, String difficulty, String duration, int totalLessons, int progress, String status) {
+    private Course createCourse(String id, String title, String desc, String category,
+                                String difficulty, String duration, int totalLessons,
+                                int progress, String status) {
         Course c = new Course();
         c.courseId = id;
         c.title = title;
@@ -579,8 +772,12 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void seedDummyNotifications() {
         new Thread(() -> {
-            com.example.edubridge.data.local.dao.NotificationDao dao = AppDatabase.getInstance(this).notificationDao();
-            com.example.edubridge.data.local.entity.Notification n1 = new com.example.edubridge.data.local.entity.Notification();
+            com.example.edubridge.data.local.dao.NotificationDao dao =
+                    AppDatabase.getInstance(this).notificationDao();
+
+            com.example.edubridge.data.local.entity.Notification n1 =
+                    new com.example.edubridge.data.local.entity.Notification();
+
             n1.id = "dummy_1";
             n1.title = "Welcome to EduBridge!";
             n1.body = "We are excited to have you here. Start a course now!";
@@ -594,14 +791,18 @@ public class DashboardActivity extends AppCompatActivity {
     @SuppressWarnings("unchecked")
     private void updateAchievementSummary(long points, Object badgesObj) {
         if (tvAchievementXp != null) tvAchievementXp.setText(points + " XP");
+
         List<String> unlockedBadgeIds = new ArrayList<>();
         if (badgesObj instanceof List) unlockedBadgeIds = (List<String>) badgesObj;
+
         int totalBadges = BadgeDefinitions.getTotalBadgeCount();
         int earnedBadges = unlockedBadgeIds.size();
+
         if (tvBadgeCount != null) tvBadgeCount.setText(earnedBadges + "/" + totalBadges + " Badges");
 
         if (layoutRecentBadges != null) {
             layoutRecentBadges.removeAllViews();
+
             if (unlockedBadgeIds.isEmpty()) {
                 TextView emptyText = new TextView(this);
                 emptyText.setText("No badges earned yet.");
@@ -613,16 +814,20 @@ public class DashboardActivity extends AppCompatActivity {
                 for (int i = 0; i < limit; i++) {
                     String badgeId = unlockedBadgeIds.get(i);
                     Badge badge = BadgeDefinitions.getBadgeById(badgeId);
+
                     ImageView badgeIcon = new ImageView(this);
                     int size = (int) (48 * getResources().getDisplayMetrics().density);
+
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
                     params.setMargins(0, 0, (int) (8 * getResources().getDisplayMetrics().density), 0);
                     badgeIcon.setLayoutParams(params);
+
                     if (badge != null && badge.getIconRes() != 0) {
                         badgeIcon.setImageResource(badge.getIconRes());
                     } else {
                         badgeIcon.setImageResource(R.drawable.ic_achievement_medal);
                     }
+
                     layoutRecentBadges.addView(badgeIcon);
                 }
             }
@@ -633,7 +838,7 @@ public class DashboardActivity extends AppCompatActivity {
         int level = LevelManager.getLevelForXp(totalXp);
         String title = LevelManager.getLevelTitle(level);
         int progressPercent = LevelManager.getProgressPercent(totalXp);
-        long xpToNext = LevelManager.getXpToNextLevel(totalXp);
+
         long currentLevelXp = LevelManager.getXpForLevel(level);
         long nextLevelXp = LevelManager.getXpForNextLevel(level);
 
@@ -654,7 +859,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         }
 
-        com.google.android.material.progressindicator.LinearProgressIndicator pbLevelProgress = findViewById(R.id.pb_level_progress);
+        LinearProgressIndicator pbLevelProgress = findViewById(R.id.pb_level_progress);
         if (pbLevelProgress != null) pbLevelProgress.setProgress(progressPercent);
     }
 
@@ -670,9 +875,18 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if (userDocListener != null) {
             userDocListener.remove();
             userDocListener = null;
+        }
+        if (progressListener != null) {
+            progressListener.remove();
+            progressListener = null;
+        }
+        if (enrollmentListener != null) {
+            enrollmentListener.remove();
+            enrollmentListener = null;
         }
     }
 }
